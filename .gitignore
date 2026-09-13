@@ -4,3 +4,4 @@ __pycache__/
 doc/README
 /.vs
 /src/config.xml
+/src/playlist.pypl
