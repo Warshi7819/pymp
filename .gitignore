@@ -1,0 +1,5 @@
+mp3/
+*.pyc
+__pycache__/
+doc/README
+/.vs
