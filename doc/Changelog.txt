@@ -1,0 +1,12 @@
+ - Remember player state between runs
+
+ - Hotkeys enabled
+   '<ctrl><shift>P' : Start playing current song
+   '<ctrl><shift>S' : Stop playing
+   '<ctrl><shift>N' : Next song
+   '<ctrl><shift>B' : Previouse song (B = BACK)
+   '<ctrl><shift>D' : Show/Hide player (D = DISPLAY)
+   '<ctrl><shift>W' : Pause/unpause song (W = WAIT)
+
+V_1_0_0_RELEASE
+ - Initial SourceForge version

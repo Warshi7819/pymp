@@ -1,0 +1,437 @@
+###################################################
+# Application : pyMP                              #
+#  * Asynchronous event based music player        #
+#  * utilizing the powers of pygame and wxPython  #
+#                                                 #
+# Author      : Rune Devik                        #
+# Date        : 14:37 05.09.2004                  #
+# License     : GNU General Public License (GPL)  #
+###################################################
+
+# Loading pygame modules
+import pygame
+import pygame.mixer
+
+# Loading standard modules
+import time, threading
+import os
+
+# Loading Own modules
+from OwnConstants import *
+
+class pymedia_controller(threading.Thread):
+    """
+    Class to control the playing of audio using
+    pygame asyncronously. Rewritten for new api
+    """
+
+    def __init__(self):
+        """
+        Class constructor
+        Args:
+          None
+        """
+        threading.Thread.__init__(self)
+        self.daemon = True
+
+        # State variables!
+        self.RUN = false
+        self.STOP = true
+        self.song = None
+        self.RELOAD = true
+        self.DESTROY = false
+        self.PAUSE = false
+
+        self.info = {}
+        # initialize info dictionary
+        self.update_info({"type": TYPE_FLUSH})
+
+
+    def update_info(self, info_data):
+        """
+        Method to update info
+        Args:
+          info_data = dictionary holding info from stream
+
+        Returns: None
+        """
+        if info_data != None:
+            # Test if we are buffering
+            if info_data["type"] == TYPE_BUFFERING:
+                self.info["buffer_status"] = info_data["buffer_status"]
+
+            # Test if we have song information from stream
+            elif info_data["type"] == TYPE_SONG_INFO:
+                if self.info["song_info"] == False:
+                    self.info["song_info"] = {}
+                    self.info["song_info"]["song"] = ""
+                    self.info["song_info"]["artist"] = ""
+
+                self.info["song_info"]["song"] = info_data["song"]
+                self.info["song_info"]["artist"] = info_data["artist"]
+
+
+            elif info_data["type"] == TYPE_FLUSH:
+                self.info["buffer_status"] = False
+                self.info["song_info"] = False
+
+        else:
+            # We are not currently buffering!
+            self.info["buffer_status"] = False
+
+
+    def read_info(self):
+        """
+        Method to read info
+        Args:
+          None
+
+        Returns: None
+        """
+        return self.info
+
+    def run(self):
+        """
+        Thread to play audio using pygame library
+        Args:
+          None
+
+        Returns: None
+        """
+
+        while(not self.DESTROY):
+            try:
+                time.sleep(0.5)
+                # If we have a song, load and play it
+                if self.RELOAD and self.song:
+                    self.STOP = false
+                    self.RELOAD = false
+                    self.PAUSE = false
+
+                    # Strip file:// prefix for local files
+                    song_path = self.song
+                    if song_path.lower().startswith('file://'):
+                        song_path = song_path[7:]
+
+                    try:
+                        pygame.mixer.music.load(song_path)
+                        pygame.mixer.music.play()
+                        self.RUN = true
+                    except Exception as e:
+                        if DEBUG:
+                            print(e)
+                        self.STOP = true
+                        self.song = None
+
+                # If song is loaded, monitor playback
+                if self.RELOAD == false and self.song:
+
+                    while self.RUN and not self.DESTROY:
+                        if not pygame.mixer.music.get_busy():
+                            # Song finished
+                            break
+                        if self.PAUSE:
+                            time.sleep(0.1)
+                            continue
+                        time.sleep(0.2)
+
+                    # Close/unload
+                    try:
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.unload()
+                    except Exception:
+                        pass
+
+
+                #  Finished playing song, reset player
+                self.STOP = true
+                self.song = None
+
+                # Reset info gathered
+                self.update_info({"type": TYPE_FLUSH})
+
+            except Exception as e:
+                if DEBUG:
+                    print(e)
+                # Reset player
+                self.STOP = true
+                self.song = None
+                self.RUN = false
+
+
+    def pause(self):
+        """
+        Function to pause playing
+        Args:
+          None
+
+        Returns: None
+        """
+        if self.PAUSE:
+            pygame.mixer.music.unpause()
+            self.PAUSE = false
+        else:
+            pygame.mixer.music.pause()
+            self.PAUSE = true
+
+    def stop_playing(self):
+        """
+        Function to stop playing
+        Args:
+          None
+
+        Returns: None
+        """
+        # Stop pygame playback
+        try:
+            if pygame.mixer.music.get_busy():
+                pygame.mixer.music.stop()
+                pygame.mixer.music.unload()
+        except Exception:
+            pass
+
+        # Set RUN to false
+        self.RUN = false
+
+        # Wait until we have indeed stopped playing before returning
+        while not self.STOP:
+            time.sleep(0.05)
+
+        # Reset player
+        self.song = None
+        self.RELOAD = true
+        self.PAUSE = false
+        self.RUN = true
+
+        return True
+
+    def play(self, song):
+        """
+        Function to start playing a given song
+        Args:
+          song = An uri specifying a file (local, http or tcp/ip)
+
+        Returns: True when done
+        """
+        self.stop_playing()
+        self.song = song
+
+        # Return when self.STOP has become false again
+        # or if self.song is set to none. If the latter happens
+        # an exception has occured and self.STOP already has
+        # been set to false and back to true again
+        while self.STOP:
+            if self.song == None:
+                break
+            time.sleep(0.02)
+
+        return True
+
+    def get_busy(self):
+        """
+        Function to figure out if we are currently playing anything
+        Args:
+          None
+
+        Returns: True if busy, False otherwise
+        """
+        if self.STOP:
+            return False
+        else:
+            return True
+
+    def destroy(self):
+        """
+        Function to destroy thread. Stops playing and awaits the
+        Termination of the thread
+        Args:
+          None
+
+        Returns: True when done
+        """
+        self.DESTROY = true
+        self.stop_playing()
+
+        return True
+
+    def getPosition_t(self):
+        """
+        Function to get position of current track
+        Args:
+          None
+
+        Returns: Number of seconds since last complete stop
+                 If sound instance does not exist we aint playing,
+                 return 0
+        """
+        try:
+            if pygame.mixer.music.get_busy():
+                return pygame.mixer.music.get_pos() / 1000.0
+        except Exception:
+            pass
+        return 0
+
+
+class pymedia_api:
+    """
+    Class to make the current underlying 3rdparty
+    streaming software transparent. To incorporate a new
+    media package into pyPlayer just make a wrapper class
+    like this one and expose these functions. Then change the class
+    loaded in the controller.py file
+    """
+
+    def __init__(self):
+        """
+        Class constructor
+        Args:
+          None
+        """
+        self.pymedia_o = None
+
+    def play(self, song):
+        """
+        Function to play a song
+        Args:
+          song = URI describing which song to play
+
+        Returns: ret value of called function
+        """
+        return self.pymedia_o.play(song)
+
+    def read_info(self):
+        """
+        Function to read info on buffer status
+        and information fetched from audio streams
+        Args:
+          None
+
+        Returns: The info gathered from a stream
+        """
+        return self.pymedia_o.read_info()
+
+
+    def stop(self):
+        """
+        Function to stop playing song
+        Args:
+          None
+
+        Returns: ret value of called function
+        """
+        return self.pymedia_o.stop_playing()
+
+    def pause(self):
+        """
+        Function to pause playing
+        Args:
+          None
+
+        Returns: ret value of called function
+        """
+        return self.pymedia_o.pause()
+
+    def resume(self):
+        """
+        Function to resume a paused song
+        Args:
+          None
+
+        Returns: ret value of called function
+        """
+        return self.pymedia_o.pause()
+
+    def get_busy(self):
+        """
+        Function to determine if we are playing a song or not
+        Args:
+          None
+
+        Returns: ret value of called function
+        """
+        return self.pymedia_o.get_busy()
+
+    def get_length(self):
+        """
+        Function to determine number of seconds played
+        Args:
+          None
+
+        Returns: ret value of called function
+        """
+        return self.pymedia_o.getPosition_t()
+
+    def init(self):
+        """
+        Function to initialize object
+        Args:
+          None
+
+        Returns: True when done
+        """
+        if self.pymedia_o == None:
+            # Initialize pygame mixer
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
+            self.pymedia_o = pymedia_controller()
+            self.pymedia_o.start()
+
+        return True
+
+    def open(self):
+        """
+        TO BE REMOVED? Initially implemented to open
+        cd drawer in CD mode only
+        Args:
+          None
+
+        Returns: None
+        """
+        pass
+
+    def destroy(self):
+        """
+        Function called to destroy object
+        Args:
+          None
+
+        Returns: True when done
+        """
+        # Shutdown pymedia controller and
+        # unreference object
+        self.pymedia_o.destroy()
+        self.pymedia_o = None
+        try:
+            pygame.mixer.quit()
+        except Exception:
+            pass
+        return True
+
+    def get_playlist(self):
+        """
+        Function to read playlist and return items in list
+        Args:
+          None
+
+        Returns: list with songs (URI's)
+        """
+        # Test that playlist exists, if not create empty one!
+        if not os.access('playlist.pypl', os.F_OK):
+            fp = open('playlist.pypl','w', encoding='utf-8')
+            fp.close()
+            return []
+
+        # open playlist and read content
+        fp = open('playlist.pypl', 'r', encoding='utf-8')
+        data = fp.readlines()
+        fp.close()
+        playlist = []
+        key = 0
+        # For each element extract filename, track name and artist
+        for element in data:
+            filename, track_name, artist = element.split('<')
+            playlist.append([filename.strip('\n'), track_name.strip('\n'), artist.strip('\n')])
+            key += 1
+
+        # Return list
+        return playlist

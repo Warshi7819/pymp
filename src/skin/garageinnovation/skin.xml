@@ -1,0 +1,56 @@
+<Skin>
+  <!-- Set background Image -->
+  <bgImage path="background.gif" />
+ 
+  <!-- Add Image buttons -->
+  <button imgUp="prev_up.gif" imgDown="prev_down.gif" event="prev" x="75" y="158" toolTip="Previous" />
+  <button imgUp="play_up.gif" imgDown="play_down.gif" event="play" x="100" y="158" toolTip="Play" />
+  <button imgUp="pause_up.gif" imgDown="pause_down.gif" event="pause" x="125" y="158" toolTip="Pause" />
+  <button imgUp="stop_up.gif" imgDown="stop_down.gif" event="stop" x="150" y="158" toolTip="Stop" /> 
+  <button imgUp="next_up.gif" imgDown="next_down.gif" event="next" x="175" y="158" toolTip="Next" />
+  <button imgUp="systray_up.gif" imgDown="systray_down.gif" event="toggleWindow" x="245" y="68" toolTip="Systray" />
+  <button imgUp="minimize_up.gif" imgDown="minimize_down.gif" event="minimize" x="259" y="68" toolTip="Minimize" />
+  <button imgUp="terminate_up.gif" imgDown="terminate_down.gif" event="terminate"  x="275" y="68" toolTip="Terminate" />
+
+
+  <toggleButton imgUp="random_up.gif" imgDown="random_down.gif" event="random" x="250" y="160" toolTip="Toggle Random" bg="#000000" fg="000000"/>
+  <toggleButton imgUp="repeat_up.gif" imgDown="repeat_down.gif" event="repeat" x="265" y="159" toolTip="Toggle Repeat" bg="#000000" fg="000000"/>
+
+  <!-- Add labels -->
+  <label type="status" length="155" height="15" bg="#000000" fg="#64DC14" scrolling="no" x="80" y="95" />
+  <label type="artist" length="155" height="15" bg="#000000" fg="#14DADC" scrolling="yes" x="80" y="110" />
+  <label type="title" length="155" height="15" bg="#000000" fg="#14DADC" scrolling="yes" x="80" y="125" />
+
+  <!--  Set background image  -->
+  <playlistBgImage path="playlist_background.gif"/>	
+  <!--  Add buttons to playlist  -->
+  <playlistButton imgUp="audio_file.ico" imgDown="audio_file.ico" event="showFileMenu" x="10" y="10" toolTip="Add file/dir"/>
+  <playlistButton imgUp="audio_http.ico" imgDown="audio_http.ico" event="addHttp" x="30" y="10" toolTip="Add http stream"/>
+  <playlistButton imgUp="audio_cd.ico" imgDown="audio_cd.ico" event="addCD" x="50" y="10" toolTip="Add CD"/>
+  <playlistButton imgUp="audio_home.ico" imgDown="audio_home.ico" event="addPympServer" x="70" y="10" toolTip="Add Pymp Server"/>
+  <playlistButton imgUp="audio_playlist.ico" imgDown="audio_playlist.ico" event="importPlaylist" x="90" y="10" toolTip="Import playlist"/>
+  <playlistButton imgUp="audio_save.ico" imgDown="audio_save.ico" event="savePlaylist" x="130" y="10" toolTip="Save playlist"/>
+  <playlistButton imgUp="audio_dustbin.ico" imgDown="audio_dustbin.ico" event="clearPlaylist" x="150" y="10" toolTip="Clear playlist"/>
+  <playlistButton imgUp="terminate_up.gif" imgDown="terminate_down.gif" event="toggleWindow" x="218" y="12" toolTip="Close"/>
+  <!--  position the playlist on frame  -->
+  <scrollList x="10" y="30" bg="#000000" fg="#64DC14" height="312" width="219"/>
+
+
+  <!-- Add volume controll -->
+  <volumeSlider size="5" x="1" y="1" />
+
+  <!-- Add menu items. About and Exit are by default 
+       added to the end of the popup menu and cannot 
+       be overridden -->
+  <menuItem name="Controlls" event="parent" >
+    <subItem name="Play" event="play" />
+    <subItem name="Stop" event="stop" />
+    <subItem name="Pause" event="pause" />
+    <subItem name="Next" event="next" />
+    <subItem name="Prev" event="prev" /> 
+  </menuItem>
+  <menuItem name="Configure" event="configure" />
+  <menuItem name="About" event="about" />
+  <menuItem name="Exit" event="terminate" />
+
+</Skin>
