@@ -47,7 +47,7 @@ class Network:
           (INT)      buffer = The size of the buffer to fetch 
           opt(INT)   timeout = Max number of seconds to block on socket
           
-        Returns: (byte string) Data fetched or empty list
+        Returns: (byte string) Data fetched or empty bytes
         """
         
         # test to see if socket is readable
@@ -63,8 +63,8 @@ class Network:
                 # Throw exception
                 raise
         else:
-            # No data available. Return empty string instead of blocking!
-            return ""
+            # No data available. Return empty bytes instead of blocking!
+            return b""
         
     def unblocking_connect(self, conn, address, timeout = CONNECT_TIMEOUT):
         """
@@ -115,32 +115,34 @@ class HttpUtils:
         """
         Method to parse header
         ARGS:
-          data = The header as plain text
+          data = The header as bytes from socket recv
 
         Returns: (list) status header [protocol, status code, ..],
                  (dict) the remaining headers {key, value}
-                 data The data after the header if any
+                 data The data after the header as bytes
         """
         headers = {}
         first = True
-        dataSplit = data.split("\r\n")
+        dataSplit = data.split(b"\r\n")
         for line in dataSplit:
-            tmp = line.strip("\r\n")
+            tmp = line.strip(b"\r\n")
             if first:
                 # The first line contains protocol name and status code
-                statusHeader = tmp.split()
+                statusHeader = tmp.decode('ascii', errors='replace').split()
                 first = False
                 continue
 
             # Extract key, value from line
-            pos = tmp.find(":")
-            headers[line[:pos]] = tmp[pos+2:]
+            line_str = tmp.decode('ascii', errors='replace')
+            pos = line_str.find(":")
+            if pos != -1:
+                headers[line_str[:pos]] = line_str[pos+2:]
 
-            if line == "":
+            if line == b"":
                 # end of headers
                 break
 
-        data = data[data.find("\r\n\r\n")+4:]
+        data = data[data.find(b"\r\n\r\n")+4:]
         
 
         return statusHeader, headers, data
@@ -189,7 +191,7 @@ class HttpUtils:
             raise Exception("Cannot connect to server")
         
         # Sending request
-        c_soc.send("%s\r\n" % request)
+        c_soc.send(("%s\r\n" % request).encode())
 
         # Receive data
         data = self.net.unblocking_receive(c_soc, 2048, 100)
@@ -221,7 +223,7 @@ class HttpUtils:
                     if not self.net.unblocking_connect(c_soc, address):
                         raise Exception("Cannot connect to server")
                     # Sending request
-                    c_soc.send("%s%s\r\n" % (request, authheader))
+                    c_soc.send(("%s%s\r\n" % (request, authheader)).encode())
                     # Receive data
                     data = self.net.unblocking_receive(c_soc, 2048, 100)
                     

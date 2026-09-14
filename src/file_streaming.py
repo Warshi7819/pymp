@@ -24,11 +24,16 @@ class HttpStreamingClient(threading.Thread):
     Class that handles the streaming over http and shoutCast
     """
 
-    def __init__(self, media):
+    def __init__(self, media, metadata_only=False, metadata_callback=None):
         """
         Class constructor initializes instance
         ARGS:
           (STRING) media = The media string
+          (BOOL) metadata_only = If True, only extract ICY metadata and
+                 discard audio data. Used as a companion for ffmpeg-based
+                 StreamPlayer to provide artist/song info.
+          (FUNC) metadata_callback = Called with {"artist": ..., "song": ...}
+                 when stream metadata changes. Used in metadata_only mode.
         """
         
         # Initialize threading
@@ -43,9 +48,11 @@ class HttpStreamingClient(threading.Thread):
         self.net = Network()
         self.httpUtils = HttpUtils()
         self.client_ip = gethostbyname(gethostname())
+        self.metadata_only = metadata_only
+        self.metadata_callback = metadata_callback
 
         # Make buffer instance
-        self.buffer = Buffer(32)
+        self.buffer = Buffer(4)
 
         # Parse url string
         self.url = self.httpUtils.parseUrl(media)
@@ -63,7 +70,7 @@ class HttpStreamingClient(threading.Thread):
         
         try:
             statusHeader, headers, c_soc, data = self.httpUtils.sendGet(self.url)
-            if statusHeader[0] == "ICY" and statusHeader[1] == "200":
+            if statusHeader[1] == "200" and "icy-metaint" in headers:
                 
                 # We have a good signal. Parse rest of header
                 stream = True
@@ -73,87 +80,102 @@ class HttpStreamingClient(threading.Thread):
                             
                 # If "ICY 200 OK" we start streaming
                 if stream:
-                    # Fetch intitial data chunck
-                    if not data:
-                        data = self.net.unblocking_receive(c_soc, self.chunk_size)
-                    
-                    bytes_since_meta = 0
-                    streamed_bytes = 0
-                    meta_data_left = 0
-                    meta_data = ''
-                    offset = 0
+                    # Accumulate data and find first metadata boundary
+                    # by scanning for StreamTitle= (handles mid-stream join)
+                    icy_metaint = int(headers['icy-metaint'])
+                    audio_buffer = data if data else b''
 
-            
-                    # Start buffering
+                    # Phase 1: Find first sync point
                     while self.RUNNING:
-                        streamed_bytes += len(data)
-                                
-                        if meta_data_left:
-                            if len(data) >= meta_data_left:
-                                meta_data += data[:meta_data_left]
-                                data = data[meta_data_left:]
-                                streamed_bytes = len(data)
-                                meta_data_left = 0
-                        
-                            else:
-                                meta_data_left -= len(data)
-                                meta_data += data
-                                data = ''
+                        marker_pos = audio_buffer.find(b"StreamTitle=")
+                        if marker_pos != -1:
+                            # Found StreamTitle= — work backwards to find length byte
+                            found = False
+                            for offset in range(16):
+                                content_start = marker_pos - offset
+                                if content_start < 1:
+                                    continue
+                                length_byte_pos = content_start - 1
+                                if length_byte_pos < 0:
+                                    continue
+                                length_byte = audio_buffer[length_byte_pos]
+                                if length_byte == 0:
+                                    continue
+                                meta_block_size = length_byte * 16
+                                meta_end = length_byte_pos + 1 + meta_block_size
+                                if meta_end > len(audio_buffer):
+                                    break  # need more data
+                                content = audio_buffer[length_byte_pos + 1:meta_end]
+                                if b"StreamTitle=" in content:
+                                    # Found first metadata boundary
+                                    audio_after_first = audio_buffer[meta_end:]
+                                    # Process first metadata
+                                    self._process_metadata(content)
+                                    # Put audio before metadata into buffer
+                                    audio_before = audio_buffer[:length_byte_pos]
+                                    if not self.metadata_only and len(audio_before) > 0:
+                                        self.put(audio_before)
+                                    audio_buffer = audio_after_first
+                                    found = True
+                                    break
+                            if found:
+                                break
 
-                        # Test if we have reached the metadata interval
-                        if streamed_bytes > int(headers['icy-metaint']):
-                    
-                            index = len(data) - (streamed_bytes - int(headers['icy-metaint']))
-                            header_length = data[index]*16
-                    
-                            # Handle the case where we WILL NOT be able to extract
-                            # all metadata from the same chunck
-                            if index+header_length+1 > len(data):
-                                meta_data_left = header_length - len(data[index+1:])
-                                meta_data = data[index+1:]
-                                data = data[:index]
-                                streamed_bytes = 0
+                        # Need more data
+                        chunk = self.net.unblocking_receive(c_soc, self.chunk_size)
+                        if chunk:
+                            audio_buffer += chunk
 
-                            # Handle the case where we WILL be able to extract
-                            # all metadata from the same chunk
-                            else:
-                                data_before = data[:index]
-                            
-                                # Remember to add 1 because we do not want to include
-                                # the byte telling us how long the header is!
-                                meta_data = data[index+1 : index+header_length+1]
-                                
-                                streamed_bytes = len(data[index+header_length+1 : ])
-                                data = data_before + data[index+header_length+1 : ]
-                                meta_data_left = 0    
-                            
-                                
-                        # Only insert data into buffer it there is something
-                        # to insert
-                        if len(data) > 0:
-                            # if metadata and if we have all of it, send info with data package
-                            if len(meta_data) > 0 and meta_data_left == 0:
-                                # Extract song and artist from metadata
-                                # TODO: Clean up this code
-                                meta_data = meta_data.strip('\r').strip('\n')
-                                artist_song = meta_data[meta_data.find("StreamTitle")+13:]
-                                artist_song = artist_song[0:artist_song.find(";")-1]
-                                seperator_index = artist_song.find(" - ")
-                                artist = artist_song[0:seperator_index].strip()
-                                song = artist_song[seperator_index + 3:].strip()
-                            
-                                self.put(data, {"type": TYPE_SONG_INFO, "artist": artist, "song": song})
-                            else:
-                                # No metadata available just know. Send only mp3 data
-                                self.put(data)
+                    # Phase 2: Continuously deliver audio, strip metadata when found
+                    while self.RUNNING:
+                        # Scan for StreamTitle= to locate metadata blocks
+                        marker_pos = audio_buffer.find(b"StreamTitle=")
+                        if marker_pos != -1:
+                            # Work backwards to find length byte and validate
+                            extracted = False
+                            for offset in range(16):
+                                content_start = marker_pos - offset
+                                if content_start < 1:
+                                    continue
+                                length_byte_pos = content_start - 1
+                                if length_byte_pos < 0:
+                                    continue
+                                length_byte = audio_buffer[length_byte_pos]
+                                if length_byte == 0:
+                                    continue
+                                meta_block_size = length_byte * 16
+                                meta_end = length_byte_pos + 1 + meta_block_size
+                                if meta_end > len(audio_buffer):
+                                    break  # need more data to validate
+                                content = audio_buffer[length_byte_pos + 1:meta_end]
+                                if b"StreamTitle=" in content:
+                                    # Valid metadata — deliver audio before it, skip it
+                                    if not self.metadata_only and length_byte_pos > 0:
+                                        self.put(audio_buffer[:length_byte_pos])
+                                    self._process_metadata(content)
+                                    audio_buffer = audio_buffer[meta_end:]
+                                    extracted = True
+                                    break
+
+                            if not extracted:
+                                # StreamTitle= found but can't validate yet — deliver safe audio
+                                # Keep max 4081 bytes (1 len + 255*16) where metadata might be
+                                safe_end = max(0, marker_pos - 4081)
+                                if safe_end > 0 and not self.metadata_only:
+                                    self.put(audio_buffer[:safe_end])
+                                audio_buffer = audio_buffer[safe_end:]
+
                         else:
-                            # No data to put in buffer
-                            pass
-                    
-                        # Read more data
-                        # tmp_size = random.randint(20, 2048)
-                        # data = self.net.unblocking_receive(c_soc, tmp_size)
-                        data = self.net.unblocking_receive(c_soc, self.chunk_size)
+                            # No StreamTitle= — everything is audio, deliver it
+                            if not self.metadata_only and len(audio_buffer) > 0:
+                                self.put(audio_buffer)
+                            # Always clear — don't accumulate audio in metadata_only mode
+                            audio_buffer = b''
+
+                        # Read more data from socket
+                        chunk = self.net.unblocking_receive(c_soc, self.chunk_size)
+                        if chunk:
+                            audio_buffer += chunk
                         
         
             # Ordinary http streaming
@@ -183,6 +205,37 @@ class HttpStreamingClient(threading.Thread):
         self.THREAD_EXIT = True
         # Finished streaming, send terminating 0
         self.put(0)
+
+    def _process_metadata(self, raw_meta):
+        """
+        Extract artist/song from raw ICY metadata bytes and notify callback.
+        ARGS:
+          raw_meta = Raw metadata bytes from the stream
+
+        Returns: None
+        """
+        meta_data_clean = raw_meta.replace(b'\x00', b'')
+        meta_data_str = meta_data_clean.decode('utf-8', errors='replace').strip()
+        st_idx = meta_data_str.find("StreamTitle=")
+        if st_idx != -1:
+            title = meta_data_str[st_idx + 13:]
+            end = title.find(";")
+            if end != -1:
+                title = title[:end]
+            title = title.strip().strip("'\"")
+            sep = title.find(" - ")
+            if sep != -1:
+                artist = title[:sep].strip()
+                song = title[sep + 3:].strip()
+            else:
+                artist = ""
+                song = title
+        else:
+            artist = ""
+            song = meta_data_str
+
+        if self.metadata_callback:
+            self.metadata_callback({"artist": artist, "song": song})
         
     def put(self, data, info=None):
         """
@@ -286,7 +339,7 @@ class audio_tcp_client(threading.Thread):
                            
                 # send filename
                 c_soc.send(struct.pack('!I', FILE_REQUEST))
-                c_soc.send(filename)
+                c_soc.send(filename.encode())
                 
                 data = self.net.unblocking_receive(c_soc, 4)
 

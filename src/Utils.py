@@ -78,7 +78,7 @@ def parsePls(filename):
     Args:
       filename = The filename
 
-    Returns: None
+    Returns: list of [uri, title, artist] elements
     """
     fp = open(filename, "r")
     line = fp.readline()
@@ -108,8 +108,14 @@ def parsePls(filename):
                 songs.append([uri, "", artistSong])
                 
             else:
-                raise Exception("Parse error. 'Title' entry found before 'File' entry")
+                raise Exception("Parse error. 'Title' entry found before a 'File' entry")
 
         line = fp.readline()
+
+    # Handle File entry with no matching Title (common in SHOUTcast PLS)
+    if entry and uri:
+        if not uri.lower().startswith("http"):
+            uri = "file://%s" % uri
+        songs.append([uri, "Unknown", ""])
 
     return songs

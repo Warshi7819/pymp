@@ -15,6 +15,7 @@ Thought I would bring it back to life and make it available here on GitHub to ce
 - Global hotkeys for playback control
 - Taskbar icon integration
 - MP3 playback with ID3 tag support
+- HTTP/SHOUTcast/Icecast streaming with ICY metadata (artist/song)
 - TCP/IP streaming support
 - Configurable settings (skin, hotkeys, stay-on-top, etc.)
 
@@ -25,12 +26,28 @@ The following deps where present during the migration from Python 2 to Python 3 
 - wxPython 4.3.1+
 - pygame-ce 2.5.8+ 
   - pygame Community Edition
+- ffmpeg
+  - Required for HTTP/SHOUTcast/Icecast stream playback
+  - Must be installed and available in PATH
 
 
-Install dependencies:
+Install Python dependencies:
 
 ```bash
 pip install wxpython pygame-ce
+```
+
+Install ffmpeg:
+
+```bash
+# Windows (winget)
+winget install Gyan.FFmpeg
+
+# Ubuntu/Debian
+sudo apt install ffmpeg
+
+# macOS (Homebrew)
+brew install ffmpeg
 ```
 
 ## Running

@@ -261,26 +261,28 @@ class HttpPlaylistDownloadManager(threading.Thread):
         
     def run(self):
         """
-        The thread body
+        The thread body. All wx GUI calls are wrapped in wx.CallAfter()
+        because this runs on a background thread and wxPython 4.x requires
+        GUI operations to happen on the main thread.
         """
-        self.parent.disableInput()
+        wx.CallAfter(self.parent.disableInput)
         # Verify input m3u or pls
         try:
             if not self.address.lower().startswith("http://"):
                 # Not an http address. Assuming it's a local file
                 if os.path.isfile(self.address):
                     if self.address.lower().endswith(".m3u"):
-                        self.statusLabel.SetLabel("Parsing local file..")
+                        wx.CallAfter(self.statusLabel.SetLabel, "Parsing local file..")
                         data = parseM3u(self.address)
                         self.parent.playlistItems = data
                             
                     elif self.address.lower().endswith(".pls"):
-                        self.statusLabel.SetLabel("Parsing local file..")
+                        wx.CallAfter(self.statusLabel.SetLabel, "Parsing local file..")
                         data = parsePls(self.address)
                         self.parent.playlistItems = data
                                                     
                     elif self.address.lower().endswith(".pypl"):
-                        self.statusLabel.SetLabel("Parsing local file..")
+                        wx.CallAfter(self.statusLabel.SetLabel, "Parsing local file..")
                         data = parsePypl(self.address)
                         self.parent.playlistItems = data
 
@@ -294,7 +296,7 @@ class HttpPlaylistDownloadManager(threading.Thread):
             # Download from the great stable internet
             else:
                 # Update label
-                self.statusLabel.SetLabel("Connecting to server..")
+                wx.CallAfter(self.statusLabel.SetLabel, "Connecting to server..")
 
                 net = Network()
                 httpUtils = HttpUtils()
@@ -312,7 +314,7 @@ class HttpPlaylistDownloadManager(threading.Thread):
                 r = conn.getresponse()
                 
                 if r.status == 401:
-                    self.statusLabel.SetLabel("Authenticating")
+                    wx.CallAfter(self.statusLabel.SetLabel, "Authenticating")
                     conn.close()
                     conn = HTTPConnection("%s:%s" % (urlTuple[0], urlTuple[1]))
                     conn.connect()
@@ -326,7 +328,7 @@ class HttpPlaylistDownloadManager(threading.Thread):
                     r = conn.getresponse()
 
                 if r.status == 200:
-                    self.statusLabel.SetLabel("Downloading")
+                    wx.CallAfter(self.statusLabel.SetLabel, "Downloading")
                     data = r.read(r.length)
                     conn.close()
                 else:
@@ -351,14 +353,15 @@ class HttpPlaylistDownloadManager(threading.Thread):
                 self.parent.playlistItems = data
                     
         except Exception as e:
-            self.statusLabel.SetLabel("Error: %s" % str(e))
+            wx.CallAfter(self.statusLabel.SetLabel, "Error: %s" % str(e))
+
+        wx.CallAfter(self.statusLabel.SetLabel, "Parsing done.")
 
         # Add all songs to playlist
-        # self.statusLabel.SetLabel("Adding %d songs to playlist" % len(self.parent.playlistItems))
-        self.parent.addAll()
+        wx.CallAfter(self.parent.addAll)
 
         # Enable input again
-        self.parent.enableInput()
+        wx.CallAfter(self.parent.enableInput)
 
     
 
@@ -395,6 +398,9 @@ class PlaylistGui(wx.Frame):
         
         wx.Frame.__init__(self, self.parent, -1, "Playlist",
                           style = windowStyle)
+
+        # Initialize drag position delta before binding mouse events
+        self.delta = (0, 0)
 
         # Bind events
         self.Bind(wx.EVT_LEFT_DOWN,     curry(self.OnLeftDown, None))

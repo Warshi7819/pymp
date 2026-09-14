@@ -18,6 +18,11 @@ import os
 
 # Loading Own modules
 from OwnConstants import *
+from StreamPlayer import StreamPlayer
+from file_streaming import HttpStreamingClient
+
+import wx
+from GuiUtils import InformDialog
 
 class pymedia_controller(threading.Thread):
     """
@@ -41,6 +46,11 @@ class pymedia_controller(threading.Thread):
         self.RELOAD = true
         self.DESTROY = false
         self.PAUSE = false
+        self.IS_STREAM = false
+
+        # Stream player state (for HTTP/SHOUTcast streams)
+        self.stream_player = None
+        self.metadata_client = None
 
         self.info = {}
         # initialize info dictionary
@@ -108,37 +118,66 @@ class pymedia_controller(threading.Thread):
                     self.RELOAD = false
                     self.PAUSE = false
 
-                    # Strip file:// prefix for local files
                     song_path = self.song
-                    if song_path.lower().startswith('file://'):
-                        song_path = song_path[7:]
 
-                    try:
-                        pygame.mixer.music.load(song_path)
-                        pygame.mixer.music.play()
-                        self.RUN = true
-                    except Exception as e:
+                    # Check if this is an HTTP/SHOUTcast stream
+                    if song_path.lower().startswith('http://') or song_path.lower().startswith('https://'):
+                        self.IS_STREAM = true
+                        self._start_stream(song_path)
+
+                    # Strip file:// prefix for local files
+                    elif song_path.lower().startswith('file://'):
+                        song_path = song_path[7:]
+                        self.IS_STREAM = false
+
+                        try:
+                            pygame.mixer.music.load(song_path)
+                            pygame.mixer.music.play()
+                            self.RUN = true
+                        except Exception as e:
+                            if DEBUG:
+                                print(e)
+                            self.STOP = true
+                            self.song = None
+
+                    # Unknown URI scheme
+                    else:
                         if DEBUG:
-                            print(e)
+                            print("Unsupported URI scheme: %s" % song_path)
                         self.STOP = true
                         self.song = None
 
                 # If song is loaded, monitor playback
                 if self.RELOAD == false and self.song:
 
-                    while self.RUN and not self.DESTROY:
-                        if not pygame.mixer.music.get_busy():
-                            # Song finished
-                            break
-                        if self.PAUSE:
-                            time.sleep(0.1)
-                            continue
-                        time.sleep(0.2)
+                    if self.IS_STREAM:
+                        # Monitor stream player
+                        while self.RUN and not self.DESTROY:
+                            if self.stream_player and not self.stream_player.is_busy():
+                                # Stream ended
+                                break
+                            if self.PAUSE:
+                                time.sleep(0.1)
+                                continue
+                            time.sleep(0.2)
+                    else:
+                        # Monitor pygame music playback
+                        while self.RUN and not self.DESTROY:
+                            if not pygame.mixer.music.get_busy():
+                                # Song finished
+                                break
+                            if self.PAUSE:
+                                time.sleep(0.1)
+                                continue
+                            time.sleep(0.2)
 
                     # Close/unload
                     try:
-                        pygame.mixer.music.stop()
-                        pygame.mixer.music.unload()
+                        if self.IS_STREAM:
+                            self._stop_stream()
+                        else:
+                            pygame.mixer.music.stop()
+                            pygame.mixer.music.unload()
                     except Exception:
                         pass
 
@@ -146,6 +185,7 @@ class pymedia_controller(threading.Thread):
                 #  Finished playing song, reset player
                 self.STOP = true
                 self.song = None
+                self.IS_STREAM = false
 
                 # Reset info gathered
                 self.update_info({"type": TYPE_FLUSH})
@@ -157,6 +197,80 @@ class pymedia_controller(threading.Thread):
                 self.STOP = true
                 self.song = None
                 self.RUN = false
+                self.IS_STREAM = false
+                self._stop_stream()
+
+    def _start_stream(self, url):
+        """
+        Start an HTTP/SHOUTcast stream with two connections:
+        1. ffmpeg connects directly to the URL for audio decoding/playback
+        2. HttpStreamingClient (metadata_only=True) connects for metadata extraction
+
+        Args:
+          url = The stream URL
+
+        Returns: None
+        """
+        # Create a metadata callback that feeds into update_info
+        def on_metadata(info):
+            self.update_info({
+                "type": TYPE_SONG_INFO,
+                "artist": info.get("artist", ""),
+                "song": info.get("song", ""),
+            })
+
+        try:
+            # Connection 2: HttpStreamingClient for metadata only
+            # Connects to the same URL, scans for StreamTitle=,
+            # extracts artist/song. Audio data is discarded.
+            self.metadata_client = HttpStreamingClient(
+                url,
+                metadata_only=True,
+                metadata_callback=on_metadata,
+            )
+            self.metadata_client.start()
+
+            # Connection 1: ffmpeg connects directly to the URL
+            # Handles HTTP, ICY protocol, strips metadata, decodes audio,
+            # outputs clean PCM to pygame for continuous playback.
+            self.stream_player = StreamPlayer(url)
+            self.stream_player.start()
+
+            self.RUN = true
+
+        except Exception as e:
+            if DEBUG:
+                print("Failed to start stream: %s" % str(e))
+            self.stream_player = None
+            self.metadata_client = None
+            self.STOP = true
+            self.song = None
+            wx.CallAfter(
+                InformDialog,
+                None, (0, 0),
+                "Stream Error",
+                "Failed to start stream: %s" % str(e),
+            )
+
+    def _stop_stream(self):
+        """
+        Stop the stream player and metadata reader.
+
+        Returns: None
+        """
+        if self.stream_player:
+            try:
+                self.stream_player.stop()
+            except Exception:
+                pass
+            self.stream_player = None
+
+        if self.metadata_client:
+            try:
+                self.metadata_client.close()
+            except Exception:
+                pass
+            self.metadata_client = None
 
 
     def pause(self):
@@ -168,10 +282,18 @@ class pymedia_controller(threading.Thread):
         Returns: None
         """
         if self.PAUSE:
-            pygame.mixer.music.unpause()
+            if self.IS_STREAM:
+                if self.stream_player:
+                    self.stream_player.unpause()
+            else:
+                pygame.mixer.music.unpause()
             self.PAUSE = false
         else:
-            pygame.mixer.music.pause()
+            if self.IS_STREAM:
+                if self.stream_player:
+                    self.stream_player.pause()
+            else:
+                pygame.mixer.music.pause()
             self.PAUSE = true
 
     def stop_playing(self):
@@ -182,6 +304,10 @@ class pymedia_controller(threading.Thread):
 
         Returns: None
         """
+        # Stop stream player if active
+        if self.IS_STREAM:
+            self._stop_stream()
+
         # Stop pygame playback
         try:
             if pygame.mixer.music.get_busy():
@@ -202,6 +328,7 @@ class pymedia_controller(threading.Thread):
         self.RELOAD = true
         self.PAUSE = false
         self.RUN = true
+        self.IS_STREAM = false
 
         return True
 
@@ -250,6 +377,7 @@ class pymedia_controller(threading.Thread):
         Returns: True when done
         """
         self.DESTROY = true
+        self._stop_stream()
         self.stop_playing()
 
         return True
@@ -371,8 +499,10 @@ class pymedia_api:
         """
         if self.pymedia_o == None:
             # Initialize pygame mixer
+            # Initialize pygame mixer — match ffmpeg output format
+            # (44100 Hz, s16, stereo, 2048 buffer for low latency)
             if not pygame.mixer.get_init():
-                pygame.mixer.init()
+                pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=2048)
             self.pymedia_o = pymedia_controller()
             self.pymedia_o.start()
 
