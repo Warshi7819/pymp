@@ -26,6 +26,11 @@ Thought I would bring it back to life and make it available here on GitHub to ce
         </a>
     </td>
   </tr>
+  <tr>
+    <td>Default Skin</td>
+    <td>GarageInnovation Skin</td>
+    <td>Playlist</td>
+  </tr>
 </table>
 
 ## Features
