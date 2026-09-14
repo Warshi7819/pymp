@@ -1,5 +1,12 @@
- - Remember player state between runs
+NEW Version 2026
+ - Ported to Python 3
 
+ - Removed deprecated dep pymedia, changed to pygame and ffmpeg
+ - finished the garageinnovation skin started on 20 years ago
+   - Now ships with two skins: default and garageinnovation
+
+--- OLD VERSIONS ---
+ - Remember player state between runs
  - Hotkeys enabled
    '<ctrl><shift>P' : Start playing current song
    '<ctrl><shift>S' : Stop playing

@@ -1,6 +1,6 @@
 # pyMP - Python Music Player
 
-An asynchronous event-based music player built with Python, wxPython, and pygame-ce.
+An asynchronous event-based music player built with Python, wxPython, ffmpeg and pygame-ce.
 
 Initially this project was started by myself back in the early 2000s. Hosted on the defacto open 
 source hub at the time - SourceForge. Actually you can still find the original python 2.0 code there:
@@ -79,8 +79,7 @@ pymp/
 │   ├── skin/      # Skin definitions (XML + images)
 │   └── ...
 ├── images/        # Application images
-├── doc/           # Documentation
-└── mp3/           # Sample MP3 files
+└── doc/           # Documentation
 ```
 
 ## License
