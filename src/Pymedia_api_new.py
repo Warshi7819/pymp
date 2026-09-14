@@ -47,6 +47,7 @@ class pymedia_controller(threading.Thread):
         self.DESTROY = false
         self.PAUSE = false
         self.IS_STREAM = false
+        self._stream_start_time = 0
 
         # Stream player state (for HTTP/SHOUTcast streams)
         self.stream_player = None
@@ -235,6 +236,7 @@ class pymedia_controller(threading.Thread):
             # outputs clean PCM to pygame for continuous playback.
             self.stream_player = StreamPlayer(url)
             self.stream_player.start()
+            self._stream_start_time = time.time()
 
             self.RUN = true
 
@@ -393,8 +395,12 @@ class pymedia_controller(threading.Thread):
                  return 0
         """
         try:
-            if pygame.mixer.music.get_busy():
-                return pygame.mixer.music.get_pos() / 1000.0
+            if self.IS_STREAM:
+                if self._stream_start_time > 0:
+                    return time.time() - self._stream_start_time
+            else:
+                if pygame.mixer.music.get_busy():
+                    return pygame.mixer.music.get_pos() / 1000.0
         except Exception:
             pass
         return 0
