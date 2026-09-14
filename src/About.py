@@ -97,9 +97,8 @@ class ScrollText(threading.Thread):
         while self.RUNNING:
             time.sleep(self.scrollspeed)
 
-            # Fire event
-            evt = UpdateScrollingText()
-            wx.PostEvent(self.parent, evt)
+            # Fire event via CallAfter for reliable cross-thread delivery
+            wx.CallAfter(self.parent.scrollText)
 
         self.STOPED = True
 
@@ -162,9 +161,6 @@ class AboutWindow(wx.Frame):
 
         # Bind close event
         self.Bind(wx.EVT_CLOSE, self.close)
-
-        # Bind scrolling event
-        self.Bind(EVT_UPDATE_SCROLLING_TEXT, self.scrollText)
         
         # Fetch icon
         self.icon = wx.Icon("gi.ico", wx.BITMAP_TYPE_ICO)
@@ -251,7 +247,9 @@ class AboutWindow(wx.Frame):
         if not lastLine["running"] and lastLine["y"] < -int(lastLine["size"]):
             for line in self.aboutText["lines"]:
                 line["running"] = False
-            self.aboutText["lines"][0]["y"] = self.lastLineY
+                line["y"] = -int(line["size"])
+            fontSize = int(self.aboutText["lines"][0]["size"])
+            self.aboutText["lines"][0]["y"] = self.lastLineY + fontSize
             self.aboutText["lines"][0]["running"] = True
 
         self.textPanel.Refresh()

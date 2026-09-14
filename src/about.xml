@@ -16,22 +16,34 @@
         font="" />
   <text value=" - Stig Petter Olsroed" size="12" colour="#FFFF00" 
         indent="1" font="" />
-  <text value="  SHOUTcast guru and a genuin programming hero (http://sourceforge.net/projects/okfw)" 
-        size="10" colour="#FFFF00" indent="2" font="" />
+  <text value="  SHOUTcast guru and a genuin programming hero"  
+        size="8" colour="#FFFF00" indent="2" font="" />
+  <text value="  - http://sourceforge.net/projects/okfw"  
+        size="8" colour="#FFFF00" indent="2" font="" />
   <text value=" - Vegar Johan Pettersen" size="12" colour="#FFFF00" 
         indent="1" font="" />
   <text value="  The numero uno alfa/beta tester!" size="10" 
         colour="#FFFF00" indent="2" font="" />
   <text value=" - Sveinar Rassmusen" size="12" colour="#FFFF00" 
         indent="1" font="" />
-  <text value="  Windows guru and damn proud of it :) (http://geekcorp.com/)" 
-        size="10" colour="#FFFF00" indent="2" font="" />
+  <text value="  Windows guru and damn proud of it :)" 
+        size="8" colour="#FFFF00" indent="2" font="" />
+  <text value="  - http://geekcorp.com/" 
+        size="8" colour="#FFFF00" indent="2" font="" />
   <text value=" - Dmitry Borisov" size="12" colour="#FFFF00" 
         indent="1" font="" />
-  <text value="  pyMedia himself. Thanx for helpfull answers and for fixing bugs I've reported. (http://www.pymedia.org)" 
-        size="10" colour="#FFFF00" indent="2" font="" />
+  <text value="  pyMedia himself. Thanx for helpfull answers" 
+        size="8" colour="#FFFF00" indent="2" font="" />
+  <text value="  and for fixing bugs I've reported." 
+        size="8" colour="#FFFF00" indent="2" font="" />
+  <text value="  - http://www.pymedia.org" 
+        size="8" colour="#FFFF00" indent="2" font="" />
   <text value=" - Robin Dunn" size="12" colour="#FFFF00" 
         indent="1" font="" />
-  <text value="  wxPython guru. Thanx for helping me out with wxpython questions. (http://www.wxpython.org)"
-        size="10" colour="#FFFF00" indent="2" font="" />
+  <text value="  wxPython guru. Thanx for helping me out"
+        size="8" colour="#FFFF00" indent="2" font="" />
+  <text value="  with wxpython questions."
+        size="8" colour="#FFFF00" indent="2" font="" />
+  <text value="  - http://www.wxpython.org"
+        size="8" colour="#FFFF00" indent="2" font="" />
 </about>
