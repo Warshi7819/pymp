@@ -85,7 +85,3 @@ pymp/
 ## License
 
 GNU General Public License v3.0 - see [LICENSE.txt](LICENSE.txt) for details.
-
-## Credits
-
-Originally created by Rune Devik (2004). Updated to Python 3 with pygame-ce for audio playback in 2026.
