@@ -2,7 +2,7 @@
 """
 Test script for SHOUTcast ICY metadata extraction.
 
-Uses the ACTUAL HttpStreamingClient from file_streaming.py —
+Uses the ACTUAL HttpStreamingClient from FileStreaming.py —
 no duplicate code. If this test passes clean, the player works.
 
 Usage:
@@ -17,7 +17,7 @@ import threading
 # Add src/ to path so we import the real player code
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from file_streaming import HttpStreamingClient
+from FileStreaming import HttpStreamingClient
 
 STREAM_URL = "http://uk3.internet-radio.com:8405/live"
 DURATION = 30

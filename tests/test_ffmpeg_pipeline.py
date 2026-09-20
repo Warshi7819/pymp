@@ -7,7 +7,7 @@ Uses the REAL player code. No duplication.
 import sys, os, time, threading, subprocess, shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from file_streaming import HttpStreamingClient
+from FileStreaming import HttpStreamingClient
 
 STREAM_URL = "http://uk3.internet-radio.com:8405/live"
 DURATION = 8

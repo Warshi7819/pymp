@@ -16,7 +16,7 @@ import wx
 # Import own modules
 from Search import PlaylistSearch
 from GuiUtils import openAsBitmap
-from sort import sortStringTuple
+from Sort import sortStringTuple
 
 DEBUG = True
 

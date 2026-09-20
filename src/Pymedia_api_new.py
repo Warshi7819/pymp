@@ -19,7 +19,7 @@ import os
 # Import own modules
 from OwnConstants import *
 from StreamPlayer import StreamPlayer
-from file_streaming import HttpStreamingClient
+from FileStreaming import HttpStreamingClient
 
 import wx
 from GuiUtils import InformDialog

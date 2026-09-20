@@ -23,7 +23,7 @@ from wx.lib.stattext import GenStaticText
 
 # Import own modules
 from Curry import Curry
-from sort import sortStringTuple
+from Sort import sortStringTuple
 from OwnConstants import *
 from GuiUtils import bitmapType, getSelected, InformDialog
 from Utils import parsePls, parseM3u, parsePypl
