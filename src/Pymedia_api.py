@@ -8,15 +8,15 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# Loading pygame modules
+# Import 3rdparty modules
 import pygame
 import pygame.mixer
 
-# Loading standard modules
+# Import standard modules
 import time, threading
 import os
 
-# Loading Own modules
+# Import own modules
 from OwnConstants import *
 
 # Class to control the playing of audio using
@@ -160,7 +160,7 @@ class pymedia_controller(threading.Thread):
 
     def pause(self):
         """
-        Function to pause playing
+        Method to pause playing
         Args:
           None
 
@@ -175,7 +175,7 @@ class pymedia_controller(threading.Thread):
 
     def stop_playing(self):
         """
-        Function to stop playing
+        Method to stop playing
         Args:
           None
 
@@ -207,7 +207,7 @@ class pymedia_controller(threading.Thread):
 
     def play(self, song):
         """
-        Function to start playing a given song
+        Method to start playing a given song
         Args:
           song = An uri specifying a file (local, http or tcp/ip)
 
@@ -229,7 +229,7 @@ class pymedia_controller(threading.Thread):
 
     def get_busy(self):
         """
-        Function to figure out if we are currently playing anything
+        Method to figure out if we are currently playing anything
         Args:
           None
 
@@ -242,7 +242,7 @@ class pymedia_controller(threading.Thread):
 
     def destroy(self):
         """
-        Function to destroy thread. Stops playing and awaits the
+        Method to destroy thread. Stops playing and awaits the
         Termination of the thread
         Args:
           None
@@ -257,7 +257,7 @@ class pymedia_controller(threading.Thread):
 
     def getPosition_t(self):
         """
-        Function to get position of current track
+        Method to get position of current track
         Args:
           None
 
@@ -292,7 +292,7 @@ class pymedia_api:
 
     def play(self, song):
         """
-        Function to play a song
+        Method to play a song
         Args:
           song = URI describing which song to play
 
@@ -302,7 +302,7 @@ class pymedia_api:
 
     def read_info(self):
         """
-        Function to read info on buffer status
+        Method to read info on buffer status
         and information fetched from audio streams
         Args:
           None
@@ -314,7 +314,7 @@ class pymedia_api:
 
     def stop(self):
         """
-        Function to stop playing song
+        Method to stop playing song
         Args:
           None
 
@@ -324,7 +324,7 @@ class pymedia_api:
 
     def pause(self):
         """
-        Function to pause playing
+        Method to pause playing
         Args:
           None
 
@@ -334,7 +334,7 @@ class pymedia_api:
 
     def resume(self):
         """
-        Function to resume a paused song
+        Method to resume a paused song
         Args:
           None
 
@@ -344,7 +344,7 @@ class pymedia_api:
 
     def get_busy(self):
         """
-        Function to determine if we are playing a song or not
+        Method to determine if we are playing a song or not
         Args:
           None
 
@@ -354,7 +354,7 @@ class pymedia_api:
 
     def get_length(self):
         """
-        Function to determine number of seconds played
+        Method to determine number of seconds played
         Args:
           None
 
@@ -364,7 +364,7 @@ class pymedia_api:
 
     def init(self):
         """
-        Function to initialize object
+        Method to initialize object
         Args:
           None
 
@@ -411,7 +411,7 @@ class pymedia_api:
 
     def get_playlist(self):
         """
-        Function to read playlist and return items in list
+        Method to read playlist and return items in list
         Args:
           None
 

@@ -11,6 +11,13 @@
 # Helper function to print out a html page of the information
 # retrieved when executing dir(obj) on a object
 def Help(object):
+    """
+    Method to generate an HTML page with object documentation
+    Args:
+      object = The object to document
+
+    Returns: None
+    """
     d = dir(object)
     fp = open("debug.html", "w")
     fp.write("<html><body>\n")

@@ -8,7 +8,7 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# Standard modules
+# Import standard modules
 import xml.sax, xml.sax.handler, sys
 from xml.dom import minidom
 import os

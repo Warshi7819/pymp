@@ -8,16 +8,18 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# Import wxpython modules
-import wx
-import wx.lib.newevent
-from Debug import Help
+# Import standard modules
 import time
 import threading
+
+# Import 3rdparty modules
+import wx
+import wx.lib.newevent
 
 # Import own modules
 from GuiUtils import bitmapType
 from ParseAbout import ParseAbout
+from Debug import Help
 
 class About:
     """
@@ -105,7 +107,7 @@ class ScrollText(threading.Thread):
     def stop(self):
         """
         Method to stop the scolling thread
-        ARGS:
+        Args:
           None
 
         Returns: None
@@ -197,6 +199,13 @@ class AboutWindow(wx.Frame):
         self.scrollThread.start()
 
     def onPaint(self, evt):
+        """
+        Method to handle paint events for scrolling text
+        Args:
+          evt = The paint event
+
+        Returns: None
+        """
         dc = wx.AutoBufferedPaintDC(self.textPanel)
         dc.SetBackground(wx.Brush("#000000"))
         dc.Clear()

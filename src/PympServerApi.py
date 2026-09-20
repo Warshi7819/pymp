@@ -13,11 +13,11 @@ import pickle
 from socket import *
 import struct
 
-# Import wxPython modules
+# Import 3rdparty modules
 from wx.lib.stattext import GenStaticText
 import  wx
 
-# Import Own modules
+# Import own modules
 from OwnConstants import *
 
 

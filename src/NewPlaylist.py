@@ -7,14 +7,14 @@
 # Date        : 14:06 20.04.2006                  #
 # License     : GNU General Public License (GPL)  #
 ###################################################
-# Standard modules
+# Import standard modules
 import sys
 
-# wxPython modules
+# Import 3rdparty modules
 import wx
-from Search import PlaylistSearch
 
-# Own modules
+# Import own modules
+from Search import PlaylistSearch
 from GuiUtils import openAsBitmap
 from sort import sortStringTuple
 

@@ -17,12 +17,11 @@ from http.client import HTTPConnection
 from urllib.parse import quote, urlencode
 import base64
 
-# Import wxpython modules
+# Import 3rdparty modules
 import  wx
 from wx.lib.stattext import GenStaticText
 
-
-# Own modules
+# Import own modules
 from Curry import curry
 from sort import sortStringTuple
 from OwnConstants import *

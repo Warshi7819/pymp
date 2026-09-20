@@ -34,7 +34,7 @@ class Network:
     def __init__(self):
         """
         Class constructor
-        ARGS:
+        Args:
           None
         """
         pass
@@ -42,7 +42,7 @@ class Network:
     def unblocking_receive(self, conn, buffer, timeout = RECEIVE_TIMEOUT):
         """
         Function to handle unblocking receive from socket
-        ARGS:
+        Args:
           (OBJ)      conn = The socket object 
           (INT)      buffer = The size of the buffer to fetch 
           opt(INT)   timeout = Max number of seconds to block on socket
@@ -69,7 +69,7 @@ class Network:
     def unblocking_connect(self, conn, address, timeout = CONNECT_TIMEOUT):
         """
         Function to perform unblocking connect
-        ARGS:
+        Args:
           (OBJ)           conn = The socket object
           ((STRING)(INT)) address = The address where we want to connect to. (IP, PORT)
           opt(INT)        timeout = The max number of seconds to block.
@@ -114,7 +114,7 @@ class HttpUtils:
     def parseHeaders(self, data):
         """
         Method to parse header
-        ARGS:
+        Args:
           data = The header as bytes from socket recv
 
         Returns: (list) status header [protocol, status code, ..],
@@ -151,7 +151,7 @@ class HttpUtils:
         """
         Open a gui windows so that we can query the user for username and
         password
-        ARGS:
+        Args:
           None
 
         Returns: (string)username,
@@ -166,7 +166,7 @@ class HttpUtils:
         """
         Method to get a page from the great internet.
         Also handles Basic authentication
-        ARGS:
+        Args:
           url = The url as a list [hostname, port, url]
 
         Returns: if http status 200:
@@ -242,7 +242,7 @@ class HttpUtils:
     def parseUrl(self, url):
         """
         Method that parses an url and breaks it up into (server, port, filename)
-        ARGS:
+        Args:
           url = The url we want to parse
 
         Returns: urlTuple [server-ip, port, filename]

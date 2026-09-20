@@ -183,8 +183,6 @@ class ConfigWindow(wx.Frame):
         Args:
           parent = The parent window
           config = The players config
-
-        Returns: None
         """
         self.config = config
         wx.Frame.__init__(self, parent, -1, "pyMP config")
@@ -203,6 +201,12 @@ class ConfigWindow(wx.Frame):
 
 
     def drawConfig(self):
+        """
+        Method to draw the config window
+        Args: None
+
+        Returns: None
+        """
         panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
 

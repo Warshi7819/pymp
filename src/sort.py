@@ -30,6 +30,15 @@ def _cmp_to_key(mycmp):
 
 # Case sensitive sorting
 def sortStringTuple(list, index, reverse = False):
+    """
+    Method to sort a list of tuples by a given index
+    Args:
+      list = The list of tuples to sort
+      index = The index to sort by
+      reverse = If True, sort in reverse order
+
+    Returns: None
+    """
     def cmp_func(x, y):
         if y[index] < x[index]:
             return 1
@@ -49,6 +58,14 @@ def sortStringTuple(list, index, reverse = False):
         
 # Case insensetive sorting
 def sortStringTupleCI(list, index):
+    """
+    Method to sort a list of tuples by a given index, case insensitive
+    Args:
+      list = The list of tuples to sort
+      index = The index to sort by
+
+    Returns: None
+    """
     def cmp_func(x, y):
         a = x[index].lower()
         b = y[index].lower()

@@ -8,11 +8,6 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# 3rdparty dependencies
-# pip install pygame-ce
-# pip install wxpython
-
-
 # change directory to pyplayer directory
 import sys, os
 pyplayer_dir = sys.argv[0]
@@ -28,16 +23,14 @@ sys.path.append('lib')
 import threading
 import time
 
-# Removed Python 2 encoding imports
-
-# Import wxpython modules
+# Import 3rdparty modules
 import wx
 import wx.adv
 import wx.lib.buttons  as  buttons
 from wx.lib.stattext import GenStaticText
-from ScrollingLabel import ScrollingLabel
 
 # Import own modules
+from ScrollingLabel import ScrollingLabel
 from ParseSkin import ParseSkin
 from UiHandler import UiHandler
 from Debug import Help

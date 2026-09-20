@@ -33,6 +33,13 @@ def bitmapType(filename):
         raise Exception("Image type unknown: %s"% filename)
 
 def openAsBitmap(file):
+    """
+    Method to open an image file and return it as a wx bitmap
+    Args:
+      file = The image file path
+
+    Returns: The image as a wx.Bitmap
+    """
     imgType = bitmapType(file)
     img = wx.Image(file, imgType).ConvertToBitmap()
     return img

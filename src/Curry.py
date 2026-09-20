@@ -1,3 +1,13 @@
+###################################################
+# Application : pyMP                              #
+#  * Asynchronous event based music player        #
+#  * utilizing the powers of pymedia and wxPython #
+#                                                 #
+# Author      : Rune Devik                        #
+# Date        : 14:37 05.09.2004                  #
+# License     : GNU General Public License (GPL)  #
+###################################################
+
 # Create a curry class used to supply arguments to button events
 # Based on an example from the pythonCookbook
 # http://aspn.activestate.com/ASPN/Python/Cookbook/

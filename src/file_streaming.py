@@ -27,7 +27,7 @@ class HttpStreamingClient(threading.Thread):
     def __init__(self, media, metadata_only=False, metadata_callback=None):
         """
         Class constructor initializes instance
-        ARGS:
+        Args:
           (STRING) media = The media string
           (BOOL) metadata_only = If True, only extract ICY metadata and
                  discard audio data. Used as a companion for ffmpeg-based
@@ -60,7 +60,7 @@ class HttpStreamingClient(threading.Thread):
     def run(self):
         """
         Thread to buffer data
-        ARGS:
+        Args:
           None
     
         Returns: None 
@@ -209,7 +209,7 @@ class HttpStreamingClient(threading.Thread):
     def _process_metadata(self, raw_meta):
         """
         Extract artist/song from raw ICY metadata bytes and notify callback.
-        ARGS:
+        Args:
           raw_meta = Raw metadata bytes from the stream
 
         Returns: None
@@ -239,8 +239,8 @@ class HttpStreamingClient(threading.Thread):
         
     def put(self, data, info=None):
         """
-        Function to insert data into buffer
-        ARGS:
+        Method to insert data into buffer
+        Args:
           data = The audio element to insert
           
         Returns: None
@@ -249,8 +249,8 @@ class HttpStreamingClient(threading.Thread):
       
     def read(self):
         """
-        Function to read one element from buffer
-        ARGS:
+        Method to read one element from buffer
+        Args:
           None
           
         Returns: Data element in fifo order
@@ -260,8 +260,8 @@ class HttpStreamingClient(threading.Thread):
             
     def close(self):
         """
-        Function to close stream
-        ARGS:
+        Method to close stream
+        Args:
           None
         
         Returns: True when done
@@ -285,7 +285,7 @@ class audio_tcp_client(threading.Thread):
     def __init__(self, media):
         """
         Class constructor initializes instance
-        ARGS:
+        Args:
           media = The media string
         """
 
@@ -311,7 +311,7 @@ class audio_tcp_client(threading.Thread):
     def run(self):
         """
         Thread to buffer data from pymp server
-        ARGS:
+        Args:
           None
           
         Returns: None
@@ -377,8 +377,8 @@ class audio_tcp_client(threading.Thread):
 
     def read(self):
         """
-        Function to read one element from buffer
-        ARGS:
+        Method to read one element from buffer
+        Args:
           None
           
         Returns: Data element in fifo order
@@ -388,8 +388,8 @@ class audio_tcp_client(threading.Thread):
 
     def put(self, data, info=None):
         """
-        Function to insert data into buffer
-        ARGS:
+        Method to insert data into buffer
+        Args:
           data = The audio element to insert
           
         Returns: None
@@ -400,8 +400,8 @@ class audio_tcp_client(threading.Thread):
 
     def close(self):
         """
-        Function to close stream
-        ARGS:
+        Method to close stream
+        Args:
           None
           
         Returns: True when done
@@ -424,7 +424,7 @@ class audio_localfile_client(threading.Thread):
     def __init__(self, filename):
         """
         Class constructor
-        ARGS:
+        Args:
           filename = The name of the file to steam
         """
         
@@ -447,7 +447,7 @@ class audio_localfile_client(threading.Thread):
     def run(self):
         """
         The main body of the streaming thread
-        ARGS:
+        Args:
           None
           
         Returns: None
@@ -471,8 +471,8 @@ class audio_localfile_client(threading.Thread):
 
     def put(self, data, info=None):
         """
-        Function to insert data into buffer
-        ARGS:
+        Method to insert data into buffer
+        Args:
           data = The audio element to insert
           
         Returns: None
@@ -482,8 +482,8 @@ class audio_localfile_client(threading.Thread):
       
     def read(self):
         """
-        Function to read one element from buffer
-        ARGS:
+        Method to read one element from buffer
+        Args:
           None
           
         Returns: Data element in fifo order
@@ -494,8 +494,8 @@ class audio_localfile_client(threading.Thread):
     
     def close(self):
         """
-        Function to close stream
-        ARGS:
+        Method to close stream
+        Args:
           None
           
         Returns: True when done
@@ -519,7 +519,7 @@ class file_streaming:
     def __init__(self):
         """
         Class constructor
-          ARGS:
+          Args:
           
         None
         """
@@ -529,8 +529,8 @@ class file_streaming:
                 
     def read(self):
         """
-        Function to read from stream
-        ARGS:
+        Method to read from stream
+        Args:
           None
           
         Returns audio element
@@ -541,8 +541,8 @@ class file_streaming:
 
     def close(self):
         """
-        Function to close stream
-        ARGS:
+        Method to close stream
+        Args:
           None
           
         Returns: The value of the called function. 
@@ -557,9 +557,9 @@ class file_streaming:
 
     def open_stream(self, media):
         """
-        Function to open stream regardless if it is an
+        Method to open stream regardless if it is an
         http, tcp/ip or local file stream
-        ARGS:
+        Args:
           media = The audio URI
 
         Returns: True if the URI is recognized and an streaming instance

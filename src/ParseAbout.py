@@ -8,12 +8,12 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# Standard modules
+# Import standard modules
 import xml.sax, xml.sax.handler, sys
 from xml.dom import minidom
 import os.path
 
-# Own modules
+# Import own modules
 from OwnConstants import *
 
 class AboutParser(xml.sax.handler.ContentHandler):

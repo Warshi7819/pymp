@@ -33,7 +33,7 @@ class Buffer:
 
     def put(self, data, info=None):
         """
-        Function to insert data into buffer
+        Method to insert data into buffer
         Args:
           (byte string) data = The audio element to insert
           (opt)info =   info about data element, if any. Default is None
@@ -45,7 +45,7 @@ class Buffer:
 
     def read(self):
         """
-        Function to read one element from buffer
+        Method to read one element from buffer
         Args:
           None
           

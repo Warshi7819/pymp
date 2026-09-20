@@ -8,14 +8,17 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
+# Import standard modules
 import subprocess
 import threading
 import time
 import shutil
 
+# Import 3rdparty modules
 import pygame
 import pygame.mixer
 
+# Import own modules
 from OwnConstants import *
 
 # PCM output format: signed 16-bit little-endian, stereo, 44100 Hz

@@ -8,7 +8,7 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# import standard modules
+# Import standard modules
 import threading
 import time
 import queue
@@ -16,7 +16,7 @@ import random
 import random
 from socket import *
 
-# import own modules
+# Import own modules
 from Pymedia_api_new import pymedia_api
 from OwnConstants import *
 
@@ -28,7 +28,7 @@ class player_state:
     def __init__(self, mode):
         """
         Class constructor
-        ARGS:
+        Args:
           None
         """
         self.RANDOM = false  
@@ -42,13 +42,13 @@ PLAYER_MODES = [(pymedia_api, "MP3")]
 
 class music_controller(threading.Thread):
     """
-    # The music event based controller
+    The music event based controller
     """
 
     def __init__(self, event_queue, pl_container, status_queue):
         """
         The objects constructor
-        ARGS:
+        Args:
           event_queue = The queue holding the events
           pl_container = The playlist object
           (OPT) status_queue = The queue on which we will return status info
@@ -96,7 +96,7 @@ class music_controller(threading.Thread):
     def send_status(self, message):
         """
         Method to send status messages to GUI
-        ARGS:
+        Args:
           message = The message to send
 
         Returns: None
@@ -144,7 +144,7 @@ class music_controller(threading.Thread):
     def run(self):
         """
         The main body og the controller thread
-        ARGS:
+        Args:
           None
 
         Returns: None

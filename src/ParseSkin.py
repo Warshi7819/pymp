@@ -8,7 +8,7 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# Standard modules
+# Import standard modules
 import xml.sax, xml.sax.handler, sys
 from xml.dom import minidom
 import os.path
@@ -213,7 +213,7 @@ class SkinParser(xml.sax.handler.ContentHandler):
 
 class ParseSkin:
     """
-    # Class to parse a pyPlayer Skin
+    Class to parse a pyPlayer Skin
     """
     
     def __init__(self):
