@@ -224,7 +224,7 @@ class ParseSkin:
         """
         pass
 
-    def parse_skin(self,filename):
+    def parseSkin(self,filename):
         """
         Method to parse a skin config file
         Args:
@@ -251,4 +251,4 @@ class ParseSkin:
 
 if __name__ == "__main__":
     p = ParseSkin()
-    print(p.parse_skin("skin.xml"))
+    print(p.parseSkin("skin.xml"))

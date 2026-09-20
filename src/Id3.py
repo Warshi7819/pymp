@@ -35,7 +35,7 @@ class MP3InfoContainer:
         self.genre = ''
 
 
-    def add_title(self, title):
+    def addTitle(self, title):
         """
         Function to add title
         Args:
@@ -47,7 +47,7 @@ class MP3InfoContainer:
         return True
 
     
-    def add_artist(self, artist):
+    def addArtist(self, artist):
         """
         Function to add artist
         Args:
@@ -59,7 +59,7 @@ class MP3InfoContainer:
         return True
     
 
-    def add_album(self, album):
+    def addAlbum(self, album):
         """
         Function to add album title
         Args:
@@ -71,7 +71,7 @@ class MP3InfoContainer:
         return True
     
 
-    def add_year(self, year):
+    def addYear(self, year):
         """
         Function to add year of album release 
         Args:
@@ -83,7 +83,7 @@ class MP3InfoContainer:
         return True
         
 
-    def add_comment(self, comment):
+    def addComment(self, comment):
         """
         Function to add comment
         Args:
@@ -95,7 +95,7 @@ class MP3InfoContainer:
         return True
     
 
-    def add_genre(self, genre):
+    def addGenre(self, genre):
         """
         Function to add genre
         Args:
@@ -108,7 +108,7 @@ class MP3InfoContainer:
         return True
         
 
-    def print_it(self):
+    def printIt(self):
         """
         Debug function to print all info
         Args:
@@ -148,7 +148,7 @@ class Id3Utils:
         pass
 
 
-    def decode_syncsafe(self, data):
+    def decodeSyncsafe(self, data):
         """
         Decode a 4-byte syncsafe integer (7 bits per byte)
         Args:
@@ -159,7 +159,7 @@ class Id3Utils:
         return (data[0] << 21) | (data[1] << 14) | (data[2] << 7) | data[3]
 
 
-    def decode_text_frame(self, data):
+    def decodeTextFrame(self, data):
         """
         Decode a text frame's data bytes
         Args:
@@ -204,7 +204,7 @@ class Id3Utils:
             return text_data.decode('latin-1', errors='replace')
 
 
-    def parse_id3v2(self, path):
+    def parseId3v2(self, path):
         """
         Function to parse ID3v2 tag from a file
         Args:
@@ -223,7 +223,7 @@ class Id3Utils:
                 return False
 
             # Decode tag size (syncsafe 4-byte integer)
-            tag_size = self.decode_syncsafe(header[6:10])
+            tag_size = self.decodeSyncsafe(header[6:10])
 
             # Read entire tag data
             tag_data = fp.read(tag_size)
@@ -257,18 +257,18 @@ class Id3Utils:
             if frame_id_str in self.ID3V2_FRAME_MAP:
                 field = self.ID3V2_FRAME_MAP[frame_id_str]
                 if field not in found_fields:
-                    value = self.decode_text_frame(frame_data)
+                    value = self.decodeTextFrame(frame_data)
                     if value:
                         if field == 'title':
-                            mp3_info.add_title(value)
+                            mp3_info.addTitle(value)
                         elif field == 'artist':
-                            mp3_info.add_artist(value)
+                            mp3_info.addArtist(value)
                         elif field == 'album':
-                            mp3_info.add_album(value)
+                            mp3_info.addAlbum(value)
                         elif field == 'year':
-                            mp3_info.add_year(value)
+                            mp3_info.addYear(value)
                         elif field == 'genre':
-                            mp3_info.add_genre(value)
+                            mp3_info.addGenre(value)
                         found_fields.add(field)
 
             # Move to next frame
@@ -281,7 +281,7 @@ class Id3Utils:
         return False
 
 
-    def parse_id3v1(self, path):
+    def parseId3v1(self, path):
         """
         Function to parse ID3v1 tag from a file
         Args:
@@ -303,12 +303,12 @@ class Id3Utils:
         # Parse and clean data
         if id3data[:3] == b"TAG":
             mp3_info = MP3InfoContainer()
-            mp3_info.add_title(id3data[3:33].replace(b'\00',b'').strip().decode('latin-1'))
-            mp3_info.add_artist(id3data[33:63].replace(b'\00',b'').strip().decode('latin-1'))
-            mp3_info.add_album(id3data[63:93].replace(b'\00',b'').strip().decode('latin-1'))
-            mp3_info.add_year(id3data[93:97].replace(b'\00',b'').strip().decode('latin-1'))
-            mp3_info.add_comment(id3data[97:126].replace(b'\00',b'').strip().decode('latin-1'))
-            mp3_info.add_genre(id3data[127:128][0])
+            mp3_info.addTitle(id3data[3:33].replace(b'\00',b'').strip().decode('latin-1'))
+            mp3_info.addArtist(id3data[33:63].replace(b'\00',b'').strip().decode('latin-1'))
+            mp3_info.addAlbum(id3data[63:93].replace(b'\00',b'').strip().decode('latin-1'))
+            mp3_info.addYear(id3data[93:97].replace(b'\00',b'').strip().decode('latin-1'))
+            mp3_info.addComment(id3data[97:126].replace(b'\00',b'').strip().decode('latin-1'))
+            mp3_info.addGenre(id3data[127:128][0])
 
             # Return mp3 info object
             return mp3_info
@@ -316,7 +316,7 @@ class Id3Utils:
             return False
 
 
-    def parse_file(self, path):
+    def parseFile(self, path):
         """
         Function to parse a given file. Tries ID3v2 first, falls back to ID3v1
         Args:
@@ -326,17 +326,17 @@ class Id3Utils:
                  or False if data cannot be extracted
         """
         # Try ID3v2 first (at beginning of file)
-        mp3_info = self.parse_id3v2(path)
+        mp3_info = self.parseId3v2(path)
         if mp3_info:
             return mp3_info
 
         # Fall back to ID3v1 (at end of file)
-        return self.parse_id3v1(path)
+        return self.parseId3v1(path)
 
 
 # Test script
 if __name__ == '__main__':
     t = Id3Utils()
-    mp3 = t.parse_file(sys.argv[1])
+    mp3 = t.parseFile(sys.argv[1])
     if mp3:
-        mp3.print_it()
+        mp3.printIt()

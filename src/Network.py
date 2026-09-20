@@ -39,7 +39,7 @@ class Network:
         """
         pass
 
-    def unblocking_receive(self, conn, buffer, timeout = RECEIVE_TIMEOUT):
+    def unblockingReceive(self, conn, buffer, timeout = RECEIVE_TIMEOUT):
         """
         Function to handle unblocking receive from socket
         Args:
@@ -66,7 +66,7 @@ class Network:
             # No data available. Return empty bytes instead of blocking!
             return b""
         
-    def unblocking_connect(self, conn, address, timeout = CONNECT_TIMEOUT):
+    def unblockingConnect(self, conn, address, timeout = CONNECT_TIMEOUT):
         """
         Function to perform unblocking connect
         Args:
@@ -187,14 +187,14 @@ class HttpUtils:
         c_soc = socket(AF_INET, SOCK_STREAM)
 
         # Try to connect!
-        if not self.net.unblocking_connect(c_soc, address):
+        if not self.net.unblockingConnect(c_soc, address):
             raise Exception("Cannot connect to server")
         
         # Sending request
         c_soc.send(("%s\r\n" % request).encode())
 
         # Receive data
-        data = self.net.unblocking_receive(c_soc, 2048, 100)
+        data = self.net.unblockingReceive(c_soc, 2048, 100)
         
         if data:
             statusHeader, headers, data = self.parseHeaders(data)
@@ -220,12 +220,12 @@ class HttpUtils:
 
                     c_soc = socket(AF_INET, SOCK_STREAM)
                     # Try to connect!
-                    if not self.net.unblocking_connect(c_soc, address):
+                    if not self.net.unblockingConnect(c_soc, address):
                         raise Exception("Cannot connect to server")
                     # Sending request
                     c_soc.send(("%s%s\r\n" % (request, authheader)).encode())
                     # Receive data
-                    data = self.net.unblocking_receive(c_soc, 2048, 100)
+                    data = self.net.unblockingReceive(c_soc, 2048, 100)
                     
                     if data:
                         statusHeader, headers, data = self.parseHeaders(data)

@@ -86,7 +86,7 @@ class Buffer:
             return [None, {"type": TYPE_BUFFERING, "buffer_status": "%d/%d" % (length ,self.BUFFER_ELEMENTS)}]
 
 
-    def empty_buffer(self):
+    def emptyBuffer(self):
         """
         Method to empty buffer
         Args:

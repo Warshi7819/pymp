@@ -111,7 +111,7 @@ class pyPlayerFrame(wx.Frame):
         
         # Fetch skin
         skin_parser = ParseSkin()
-        self.skin = skin_parser.parse_skin(self.config.data["skin"])
+        self.skin = skin_parser.parseSkin(self.config.data["skin"])
         
         # Hold on to labels
         self.labels = {}

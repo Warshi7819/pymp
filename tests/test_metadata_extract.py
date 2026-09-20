@@ -50,7 +50,7 @@ def main():
 
     collected = []
 
-    def on_metadata(info):
+    def onMetadata(info):
         collected.append({
             "artist": info.get("artist", ""),
             "song": info.get("song", ""),
@@ -61,7 +61,7 @@ def main():
     client = DebugHttpStreamingClient(
         url,
         metadata_only=True,
-        metadata_callback=on_metadata,
+        metadata_callback=onMetadata,
     )
 
     print("--- Starting HttpStreamingClient (real player code) ---")

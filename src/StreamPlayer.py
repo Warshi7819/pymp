@@ -149,7 +149,7 @@ class StreamPlayer(threading.Thread):
         except Exception:
             pass
 
-    def is_busy(self):
+    def isBusy(self):
         """
         Check if the stream is still playing.
 

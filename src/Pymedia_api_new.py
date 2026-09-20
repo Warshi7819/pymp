@@ -55,10 +55,10 @@ class pymedia_controller(threading.Thread):
 
         self.info = {}
         # initialize info dictionary
-        self.update_info({"type": TYPE_FLUSH})
+        self.updateInfo({"type": TYPE_FLUSH})
 
 
-    def update_info(self, info_data):
+    def updateInfo(self, info_data):
         """
         Method to update info
         Args:
@@ -91,7 +91,7 @@ class pymedia_controller(threading.Thread):
             self.info["buffer_status"] = False
 
 
-    def read_info(self):
+    def readInfo(self):
         """
         Method to read info
         Args:
@@ -154,7 +154,7 @@ class pymedia_controller(threading.Thread):
                     if self.IS_STREAM:
                         # Monitor stream player
                         while self.RUN and not self.DESTROY:
-                            if self.stream_player and not self.stream_player.is_busy():
+                            if self.stream_player and not self.stream_player.isBusy():
                                 # Stream ended
                                 break
                             if self.PAUSE:
@@ -189,7 +189,7 @@ class pymedia_controller(threading.Thread):
                 self.IS_STREAM = false
 
                 # Reset info gathered
-                self.update_info({"type": TYPE_FLUSH})
+                self.updateInfo({"type": TYPE_FLUSH})
 
             except Exception as e:
                 if DEBUG:
@@ -212,9 +212,9 @@ class pymedia_controller(threading.Thread):
 
         Returns: None
         """
-        # Create a metadata callback that feeds into update_info
-        def on_metadata(info):
-            self.update_info({
+        # Create a metadata callback that feeds into updateInfo
+        def onMetadata(info):
+            self.updateInfo({
                 "type": TYPE_SONG_INFO,
                 "artist": info.get("artist", ""),
                 "song": info.get("song", ""),
@@ -227,7 +227,7 @@ class pymedia_controller(threading.Thread):
             self.metadata_client = HttpStreamingClient(
                 url,
                 metadata_only=True,
-                metadata_callback=on_metadata,
+                metadata_callback=onMetadata,
             )
             self.metadata_client.start()
 
@@ -298,7 +298,7 @@ class pymedia_controller(threading.Thread):
                 pygame.mixer.music.pause()
             self.PAUSE = true
 
-    def stop_playing(self):
+    def stopPlaying(self):
         """
         Method to stop playing
         Args:
@@ -342,7 +342,7 @@ class pymedia_controller(threading.Thread):
 
         Returns: True when done
         """
-        self.stop_playing()
+        self.stopPlaying()
         self.song = song
 
         # Return when self.STOP has become false again
@@ -356,7 +356,7 @@ class pymedia_controller(threading.Thread):
 
         return True
 
-    def get_busy(self):
+    def getBusy(self):
         """
         Method to figure out if we are currently playing anything
         Args:
@@ -380,7 +380,7 @@ class pymedia_controller(threading.Thread):
         """
         self.DESTROY = true
         self._stop_stream()
-        self.stop_playing()
+        self.stopPlaying()
 
         return True
 
@@ -433,7 +433,7 @@ class pymedia_api:
         """
         return self.pymedia_o.play(song)
 
-    def read_info(self):
+    def readInfo(self):
         """
         Method to read info on buffer status
         and information fetched from audio streams
@@ -442,7 +442,7 @@ class pymedia_api:
 
         Returns: The info gathered from a stream
         """
-        return self.pymedia_o.read_info()
+        return self.pymedia_o.readInfo()
 
 
     def stop(self):
@@ -453,7 +453,7 @@ class pymedia_api:
 
         Returns: ret value of called function
         """
-        return self.pymedia_o.stop_playing()
+        return self.pymedia_o.stopPlaying()
 
     def pause(self):
         """
@@ -475,7 +475,7 @@ class pymedia_api:
         """
         return self.pymedia_o.pause()
 
-    def get_busy(self):
+    def getBusy(self):
         """
         Method to determine if we are playing a song or not
         Args:
@@ -483,9 +483,9 @@ class pymedia_api:
 
         Returns: ret value of called function
         """
-        return self.pymedia_o.get_busy()
+        return self.pymedia_o.getBusy()
 
-    def get_length(self):
+    def getLength(self):
         """
         Method to determine number of seconds played
         Args:
@@ -543,7 +543,7 @@ class pymedia_api:
             pass
         return True
 
-    def get_playlist(self):
+    def getPlaylist(self):
         """
         Method to read playlist and return items in list
         Args:

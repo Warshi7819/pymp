@@ -122,7 +122,7 @@ class HttpStreamingClient(threading.Thread):
                                 break
 
                         # Need more data
-                        chunk = self.net.unblocking_receive(c_soc, self.chunk_size)
+                        chunk = self.net.unblockingReceive(c_soc, self.chunk_size)
                         if chunk:
                             audio_buffer += chunk
 
@@ -173,7 +173,7 @@ class HttpStreamingClient(threading.Thread):
                             audio_buffer = b''
 
                         # Read more data from socket
-                        chunk = self.net.unblocking_receive(c_soc, self.chunk_size)
+                        chunk = self.net.unblockingReceive(c_soc, self.chunk_size)
                         if chunk:
                             audio_buffer += chunk
                         
@@ -184,7 +184,7 @@ class HttpStreamingClient(threading.Thread):
                 printDebug("Streaming ordinary http")
                 while self.RUNNING:
                     if streamedBytes < int(headers["Content-Length"]):
-                        data = self.net.unblocking_receive(c_soc, self.chunk_size)
+                        data = self.net.unblockingReceive(c_soc, self.chunk_size)
                         
                         if data:
                             streamedBytes += len(data)
@@ -272,7 +272,7 @@ class HttpStreamingClient(threading.Thread):
         while not self.THREAD_EXIT:
             time.sleep(.02)
         # Clear buffer
-        self.buffer.empty_buffer()
+        self.buffer.emptyBuffer()
         return True
     
 
@@ -334,14 +334,14 @@ class audio_tcp_client(threading.Thread):
                 c_soc = socket(AF_INET, SOCK_STREAM)
 
 
-                if not self.net.unblocking_connect(c_soc, self.address):
+                if not self.net.unblockingConnect(c_soc, self.address):
                     raise Exception("Cannot connect to server")
                            
                 # send filename
                 c_soc.send(struct.pack('!I', FILE_REQUEST))
                 c_soc.send(filename.encode())
                 
-                data = self.net.unblocking_receive(c_soc, 4)
+                data = self.net.unblockingReceive(c_soc, 4)
 
                 if len(data) == 4:
                     # fetch answer
@@ -356,7 +356,7 @@ class audio_tcp_client(threading.Thread):
                         bytes_downloaded = 0
                         # Stream file over network
                         while(self.filesize > bytes_downloaded) and self.RUNNING:
-                            data = self.net.unblocking_receive(c_soc, self.chunk_size)
+                            data = self.net.unblockingReceive(c_soc, self.chunk_size)
                             if len(data):
                                 bytes_downloaded += len(data)
                                 self.put(data)
@@ -412,7 +412,7 @@ class audio_tcp_client(threading.Thread):
         while not self.THREAD_EXIT:
             time.sleep(.02)
         # Clear buffer
-        self.buffer.empty_buffer()
+        self.buffer.emptyBuffer()
         return True
 
 
@@ -506,7 +506,7 @@ class audio_localfile_client(threading.Thread):
         while not self.THREAD_EXIT:
             time.sleep(.02)
         # Clear buffer
-        self.buffer.empty_buffer()
+        self.buffer.emptyBuffer()
         return True
         
         
@@ -555,7 +555,7 @@ class file_streaming:
         return ret
         
 
-    def open_stream(self, media):
+    def openStream(self, media):
         """
         Method to open stream regardless if it is an
         http, tcp/ip or local file stream

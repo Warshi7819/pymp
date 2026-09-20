@@ -88,12 +88,12 @@ class music_controller(threading.Thread):
             # Clear playlist
             self.pl_container.play_list = []
             # Fetch the new players play list
-            self.pl_container.play_list = self.players[self.state.PLAYER_MODE].get_playlist()
+            self.pl_container.play_list = self.players[self.state.PLAYER_MODE].getPlaylist()
             # Reload playlist
             self.pl_container.refreshPlaylist()
 
         
-    def send_status(self, message):
+    def sendStatus(self, message):
         """
         Method to send status messages to GUI
         Args:
@@ -158,7 +158,7 @@ class music_controller(threading.Thread):
                 # We have a time-out.
                 if self.state.PLAY:
                     # If state is set to playing check that we are playing a song
-                    if not self.players[self.state.PLAYER_MODE].get_busy():
+                    if not self.players[self.state.PLAYER_MODE].getBusy():
                         # Song is finished. Jump to next
                         event = ['next']
                     else:
@@ -175,21 +175,21 @@ class music_controller(threading.Thread):
                 if self.state.PLAY:
                     # See if we have any info from the player object that we want to display
                     status_sent = False
-                    info = self.players[self.state.PLAYER_MODE].read_info()
+                    info = self.players[self.state.PLAYER_MODE].readInfo()
                     if info != None:
                         if info["buffer_status"] != False:
                             # We are buffering
-                            self.send_status(['buffering', info["buffer_status"]])
+                            self.sendStatus(['buffering', info["buffer_status"]])
                             status_sent = True
                             
                         elif info["song_info"] != False:
                             # We have song information from stream!
                             #print "controller:", info["song_info"]
-                            self.send_status(['update', self.players[self.state.PLAYER_MODE].get_length(), info["song_info"]["artist"], info["song_info"]["song"]])
+                            self.sendStatus(['update', self.players[self.state.PLAYER_MODE].getLength(), info["song_info"]["artist"], info["song_info"]["song"]])
                             status_sent = True
                             
                     if not status_sent:
-                        self.send_status(['update', self.players[self.state.PLAYER_MODE].get_length()])
+                        self.sendStatus(['update', self.players[self.state.PLAYER_MODE].getLength()])
                 
             ####
             # Handle previouse event
@@ -200,7 +200,7 @@ class music_controller(threading.Thread):
                     # If random playing is enabled, this event kills it.
                     if self.state.RANDOM:
                         self.state.RANDOM = false
-                        self.send_status(['random_repeat', self.state.RANDOM, self.state.REPEAT])
+                        self.sendStatus(['random_repeat', self.state.RANDOM, self.state.REPEAT])
                     # If we have deleted some songs make sure that we still are in range
                     # of playlist
                     if self.pl_container.current >= len(self.pl_container.play_list):
@@ -221,11 +221,11 @@ class music_controller(threading.Thread):
                         if self.state.PLAY:
                             self.players[self.state.PLAYER_MODE].play(self.pl_container.play_list[self.pl_container.current][0])
                             self.state.PLAY = true
-                            self.send_status(['play'])
+                            self.sendStatus(['play'])
                             
                         else:
                             # Send status
-                            self.send_status(['stop'])
+                            self.sendStatus(['stop'])
                     
             ####
             # Handle next event
@@ -247,9 +247,9 @@ class music_controller(threading.Thread):
                             self.state.PLAY = false
                             self.pl_container.setCurrent(0)
                             if len(self.pl_container.play_list):
-                                self.send_status(['stop'])
+                                self.sendStatus(['stop'])
                             else:
-                                self.send_status(['empty'])
+                                self.sendStatus(['empty'])
                             
                         
                               
@@ -258,10 +258,10 @@ class music_controller(threading.Thread):
                         if self.state.PLAY:
                             self.players[self.state.PLAYER_MODE].play(self.pl_container.play_list[self.pl_container.current][0])
                             self.state.PLAY = true
-                            self.send_status(['play'])
+                            self.sendStatus(['play'])
                         else:
                             # Send status
-                            self.send_status(['stop'])
+                            self.sendStatus(['stop'])
 
                     
             ####
@@ -279,7 +279,7 @@ class music_controller(threading.Thread):
                     self.state.PLAY = true
                         
                     # Send status
-                    self.send_status(['play'])
+                    self.sendStatus(['play'])
                     
                 else:
                     song = self.pl_container.current
@@ -289,7 +289,7 @@ class music_controller(threading.Thread):
                         self.state.PLAY = true
                         
                         # Send status
-                        self.send_status(['play'])
+                        self.sendStatus(['play'])
                         
                             
                         
@@ -299,7 +299,7 @@ class music_controller(threading.Thread):
                         self.state.PLAY = true
                         
                         # Send status
-                        self.send_status(['play'])
+                        self.sendStatus(['play'])
                         
                     else:
                         #print 'No more items to play!'
@@ -308,7 +308,7 @@ class music_controller(threading.Thread):
                         self.pl_container.setCurrent(0)
 
                         # Send status
-                        self.send_status(['empty'])
+                        self.sendStatus(['empty'])
                         # Send status message
                 
 
@@ -318,13 +318,13 @@ class music_controller(threading.Thread):
                     self.state.PAUSE = true
                     self.players[self.state.PLAYER_MODE].pause()
                     # Send status
-                    self.send_status(['pause'])
+                    self.sendStatus(['pause'])
                 elif self.state.PAUSE:
                     self.state.PLAY = true
                     self.state.PAUSE = false
                     self.players[self.state.PLAYER_MODE].resume()
                     # Send status
-                    self.send_status(['play'])
+                    self.sendStatus(['play'])
                     
             elif event[0] == 'stop':
                 if self.state.PLAY == true:
@@ -337,17 +337,17 @@ class music_controller(threading.Thread):
                     self.state.PLAY = false
                 
                 # Send status
-                self.send_status(['stop'])
+                self.sendStatus(['stop'])
                                 
             elif event[0] == 'random':
                 if self.state.RANDOM:
                     self.state.RANDOM = false
                     # send status
-                    self.send_status(['random_repeat', self.state.RANDOM, self.state.REPEAT])
+                    self.sendStatus(['random_repeat', self.state.RANDOM, self.state.REPEAT])
                 else:
                     self.state.RANDOM = true
                     # send status
-                    self.send_status(['random_repeat', self.state.RANDOM, self.state.REPEAT])
+                    self.sendStatus(['random_repeat', self.state.RANDOM, self.state.REPEAT])
                     
                     
                     
@@ -355,11 +355,11 @@ class music_controller(threading.Thread):
                 if self.state.REPEAT:
                     self.state.REPEAT = false
                     # send status
-                    self.send_status(['random_repeat', self.state.RANDOM, self.state.REPEAT])
+                    self.sendStatus(['random_repeat', self.state.RANDOM, self.state.REPEAT])
                 else:
                     self.state.REPEAT = true
                     # send status
-                    self.send_status(['random_repeat', self.state.RANDOM, self.state.REPEAT])
+                    self.sendStatus(['random_repeat', self.state.RANDOM, self.state.REPEAT])
 
             # Play song on position X in playlist
             elif event[0].isdigit():
@@ -372,13 +372,13 @@ class music_controller(threading.Thread):
                     self.pl_container.setCurrent(song)
 
                     # Send status
-                    self.send_status(['play'])
+                    self.sendStatus(['play'])
 
                 else:
                     self.state.PLAY = false
 
                     # Send status
-                    self.send_status(['stop'])
+                    self.sendStatus(['stop'])
         
             elif event[0] == 'status':
                     
@@ -392,7 +392,7 @@ class music_controller(threading.Thread):
                 self.players[self.state.PLAYER_MODE].destroy()
                 #print "Send quit status"
                 # send status
-                self.send_status(['quit'])
+                self.sendStatus(['quit'])
                 #print "Breaking out of loop"
                 break
             

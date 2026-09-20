@@ -198,7 +198,7 @@ class pyMPServer:
                     filename = join(root, name)
                     self.allowedFiles.append(filename)
                     # Extract mp3 info
-                    info = self.id3Utils.parse_file(filename)
+                    info = self.id3Utils.parseFile(filename)
                     if info != False:
                         # Append info to current playlist
                         self.playlist.append([filename, info.title, info.artist])

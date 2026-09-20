@@ -46,7 +46,7 @@ class PlaylistContainer:
         Returns: None
         """
         for filename in files:
-            info = self.id3Utils.parse_file(filename)
+            info = self.id3Utils.parseFile(filename)
             filename = 'file://%s' % filename
             
             if info != False:
@@ -67,7 +67,7 @@ class PlaylistContainer:
         """
         printDebug(filename)
         if os.access(filename, os.F_OK):
-            info = self.id3Utils.parse_file(filename)
+            info = self.id3Utils.parseFile(filename)
             filename = 'file://%s' % filename
             
             if info != False:
@@ -95,7 +95,7 @@ class PlaylistContainer:
                 if name.endswith('.mp3'):
                     # Parse file and fetch id3 info
                     filename = join(root, name)
-                    mp3Info = self.id3Utils.parse_file(filename)
+                    mp3Info = self.id3Utils.parseFile(filename)
                     filename = 'file://%s' % filename
                     if mp3Info != False:
                         self.play_list.append([filename, mp3Info.title, mp3Info.artist])
