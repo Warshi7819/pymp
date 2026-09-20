@@ -8,9 +8,35 @@ source hub at the time - SourceForge. Actually you can still find the original p
 
 Thought I would bring it back to life and make it available here on GitHub to celebrate the past.
 
+<table>
+  <tr>
+    <td>
+        <a href="screenshots/skin-default.png" target="_blank" rel="noopener noreferrer">
+            <img src="screenshots/skin-default.png" alt="Default Skin" width="150">
+        </a>
+    </td>
+    <td>
+        <a href="screenshots/skin-garageinnovation.png" target="_blank" rel="noopener noreferrer">
+            <img src="screenshots/skin-garageinnovation.png" alt="GarageInnovation Skin" width="150">
+        </a>
+    </td>
+    <td>
+        <a href="screenshots/playlist.png" target="_blank" rel="noopener noreferrer">
+            <img src="screenshots/playlist.png" alt="Playlist" width="150">
+        </a>
+    </td>
+  </tr>
+  <tr>
+    <td>Default Skin</td>
+    <td>GarageInnovation Skin</td>
+    <td>Playlist</td>
+  </tr>
+</table>
+
 ## Features
 
 - Skinnable GUI with XML-based skin configuration
+  - Shaped Windows!
 - Playlist management (add files, directories, import/export)
 - Global hotkeys for playback control
 - Taskbar icon integration
