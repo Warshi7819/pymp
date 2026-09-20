@@ -20,7 +20,7 @@ import wx
 from ScrollingLabel import ScrollingLabel
 
 # Import own modules
-from controller import music_controller
+from controller import MusicController
 from Playlist import PlaylistContainer
 from PlaylistGui import PlaylistGui
 from OwnConstants import *
@@ -68,7 +68,7 @@ class UiHandler(threading.Thread):
         self.plContainer.playlistGui = self.playlistGui
 
         # Start music controller
-        self.controller = music_controller(self.eventQueue, self.plContainer,
+        self.controller = MusicController(self.eventQueue, self.plContainer,
                                            self.statusQueue)
         self.controller.start()
 
@@ -88,9 +88,9 @@ class UiHandler(threading.Thread):
             
         
 
-        # Start up pympClientApi
+        # Start up PympClientApi
         if C_API:
-            self.api = pympClientApi(self)
+            self.api = PympClientApi(self)
             self.api.start()
         
 
@@ -502,7 +502,7 @@ class UiHandler(threading.Thread):
         """
         self.config.data["playlistPosition"] = self.playlistGui.GetPosition().Get()
 
-        # Close pympClientApi
+        # Close PympClientApi
         if C_API:
             address = (gethostbyname(gethostname()), 8308)
             c_soc = socket(AF_INET, SOCK_STREAM)
@@ -519,7 +519,7 @@ class UiHandler(threading.Thread):
 
 
 
-class pympClientApi(threading.Thread):
+class PympClientApi(threading.Thread):
     """
     The pymp client api. Can be used to control the pymp player over
     a tcp/ip connection.

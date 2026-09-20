@@ -36,11 +36,11 @@ from UiHandler import UiHandler
 from Debug import Help
 from Config import Config
 from About import About
-from Curry import curry
+from Curry import Curry
 from GuiUtils import bitmapType
 from OwnConstants import *
 
-class pyPlayerFrame(wx.Frame):
+class PyPlayerFrame(wx.Frame):
     """
     Class to draw the pyPlayer GUI, sub-classed of wxFrame
     """
@@ -73,10 +73,10 @@ class pyPlayerFrame(wx.Frame):
 
         # Bind the needed events
         self.Bind(wx.EVT_LEFT_DCLICK,   self.OnDoubleClick)
-        self.Bind(wx.EVT_LEFT_DOWN,     curry(self.OnLeftDown, None))
-        self.Bind(wx.EVT_MOTION,        curry(self.OnMouseMove, None))
+        self.Bind(wx.EVT_LEFT_DOWN,     Curry(self.OnLeftDown, None))
+        self.Bind(wx.EVT_MOTION,        Curry(self.OnMouseMove, None))
         self.Bind(wx.EVT_LEFT_UP,       self.OnLeftUp)
-        self.Bind(wx.EVT_RIGHT_UP,      curry(self.ShowApplicationMenu, None))
+        self.Bind(wx.EVT_RIGHT_UP,      Curry(self.ShowApplicationMenu, None))
         self.Bind(wx.EVT_PAINT,         self.OnPaint)
 
         # If config enables hotkeys, bind those too
@@ -219,7 +219,7 @@ class pyPlayerFrame(wx.Frame):
              
             c = wx.BitmapButton(self, -1, imgUp, (button["x"],button["y"]), imgUp.GetSize(), wx.BORDER_NONE)
             c.SetBackgroundColour("#000000")
-            parent.Bind(wx.EVT_BUTTON, curry(self.ExecuteEvent, button["event"]), c)
+            parent.Bind(wx.EVT_BUTTON, Curry(self.ExecuteEvent, button["event"]), c)
             c.SetBitmapFocus(imgUp)
             c.SetBitmapPressed(imgDown)
             c.SetBitmapDisabled(imgUp)
@@ -243,7 +243,7 @@ class pyPlayerFrame(wx.Frame):
                 
                 c = buttons.GenBitmapToggleButton(self, -1, imgUp, (button["x"], button["y"]))
                 c.SetBackgroundColour("#000000")
-                parent.Bind(wx.EVT_BUTTON, curry(self.ExecuteEvent, button["event"]), c)
+                parent.Bind(wx.EVT_BUTTON, Curry(self.ExecuteEvent, button["event"]), c)
                 
                 c.SetSize((imgUp.GetWidth(), imgUp.GetHeight()))
                 c.SetBitmapFocus(imgUp)
@@ -302,11 +302,11 @@ class pyPlayerFrame(wx.Frame):
                     parent.labels[label["type"]].SetForegroundColour(label["fg"])
 
                 # Bind events
-                parent.labels[label["type"]].Bind(wx.EVT_RIGHT_UP, curry(self.ShowApplicationMenu, parent.labels[label["type"]]))
+                parent.labels[label["type"]].Bind(wx.EVT_RIGHT_UP, Curry(self.ShowApplicationMenu, parent.labels[label["type"]]))
                 
                 parent.labels[label["type"]].SetToolTip("Right-click for menu")
-                parent.labels[label["type"]].Bind(wx.EVT_LEFT_DOWN, curry(self.OnLeftDown, (label["x"], label["y"])))
-                parent.labels[label["type"]].Bind(wx.EVT_MOTION, curry(self.OnMouseMove, (label["x"], label["y"])))
+                parent.labels[label["type"]].Bind(wx.EVT_LEFT_DOWN, Curry(self.OnLeftDown, (label["x"], label["y"])))
+                parent.labels[label["type"]].Bind(wx.EVT_MOTION, Curry(self.OnMouseMove, (label["x"], label["y"])))
                 
                 parent.labels[label["type"]].Bind(wx.EVT_LEFT_DCLICK,   self.OnDoubleClick)
 
@@ -325,7 +325,7 @@ class pyPlayerFrame(wx.Frame):
             
             if element["parent"] == False:
                 uniqueId = wx.NewIdRef()
-                parent.Bind(wx.EVT_MENU, curry(self.ExecuteEvent, element["event"]), id=uniqueId)
+                parent.Bind(wx.EVT_MENU, Curry(self.ExecuteEvent, element["event"]), id=uniqueId)
                 parent.applicationMenu.Append(uniqueId, element["name"])
             else:
                 subMenu = wx.Menu()
@@ -333,7 +333,7 @@ class pyPlayerFrame(wx.Frame):
                     uniqueId = wx.NewIdRef()
                     # Add this childe to sub-menu
                     subMenu.Append(uniqueId, child["name"])
-                    parent.Bind(wx.EVT_MENU, curry(self.ExecuteEvent, child["event"]), id=uniqueId)
+                    parent.Bind(wx.EVT_MENU, Curry(self.ExecuteEvent, child["event"]), id=uniqueId)
                          
                          
                 uniqueId = wx.NewIdRef()
@@ -369,7 +369,7 @@ class pyPlayerFrame(wx.Frame):
         # has the show/hide option
         parent.taskbarMenu = wx.Menu()
         uniqueId = wx.NewIdRef()
-        self.tbicon.Bind(wx.EVT_MENU, curry(self.ExecuteEvent, "toggleWindow"), id=uniqueId)
+        self.tbicon.Bind(wx.EVT_MENU, Curry(self.ExecuteEvent, "toggleWindow"), id=uniqueId)
         parent.taskbarMenu.Append(uniqueId, "Show/Hide")
         
         # Parse skin
@@ -377,7 +377,7 @@ class pyPlayerFrame(wx.Frame):
             
             if element["parent"] == False:
                 uniqueId = wx.NewIdRef()
-                self.tbicon.Bind(wx.EVT_MENU, curry(self.ExecuteEvent, element["event"]), id=uniqueId)
+                self.tbicon.Bind(wx.EVT_MENU, Curry(self.ExecuteEvent, element["event"]), id=uniqueId)
                 parent.taskbarMenu.Append(uniqueId, element["name"])
             else:
                 subMenu = wx.Menu()
@@ -385,7 +385,7 @@ class pyPlayerFrame(wx.Frame):
                     uniqueId = wx.NewIdRef()
                     # Add this childe to sub-menu
                     subMenu.Append(uniqueId, child["name"])
-                    self.tbicon.Bind(wx.EVT_MENU, curry(self.ExecuteEvent, child["event"]), id=uniqueId)
+                    self.tbicon.Bind(wx.EVT_MENU, Curry(self.ExecuteEvent, child["event"]), id=uniqueId)
                     
                          
                 uniqueId = wx.NewIdRef()
@@ -620,9 +620,9 @@ class pyPlayerFrame(wx.Frame):
         else:
             printDebug("Hotkey not recognized: %s" % str(dir(event)))
                     
-class pyPlayer(wx.App):
+class PyPlayer(wx.App):
     def OnInit(self):
-        frame = pyPlayerFrame(None)
+        frame = PyPlayerFrame(None)
         
         return True
 
@@ -631,8 +631,8 @@ class pyPlayer(wx.App):
 if __name__ == "__main__":
     # Start application
     while True:
-        #app = pyPlayer(1, 'log\\stdout.txt')
-        app = pyPlayer(0)
+        #app = PyPlayer(1, 'log\\stdout.txt')
+        app = PyPlayer(0)
         app.MainLoop()
         
         # parse config and see if this is a restart of some sort..

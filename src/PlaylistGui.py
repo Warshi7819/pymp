@@ -22,7 +22,7 @@ import  wx
 from wx.lib.stattext import GenStaticText
 
 # Import own modules
-from Curry import curry
+from Curry import Curry
 from sort import sortStringTuple
 from OwnConstants import *
 from GuiUtils import bitmapType, getSelected, InformDialog
@@ -402,8 +402,8 @@ class PlaylistGui(wx.Frame):
         self.delta = (0, 0)
 
         # Bind events
-        self.Bind(wx.EVT_LEFT_DOWN,     curry(self.OnLeftDown, None))
-        self.Bind(wx.EVT_MOTION,        curry(self.OnMouseMove, None))
+        self.Bind(wx.EVT_LEFT_DOWN,     Curry(self.OnLeftDown, None))
+        self.Bind(wx.EVT_MOTION,        Curry(self.OnMouseMove, None))
         self.Bind(wx.EVT_LEFT_UP,       self.OnLeftUp)
         self.Bind(wx.EVT_PAINT,         self.OnPaint)
         self.Bind(wx.EVT_LEFT_DCLICK,   self.OnDoubleClick)
@@ -441,7 +441,7 @@ class PlaylistGui(wx.Frame):
             
             c = wx.BitmapButton(self, -1, imgUp, (button["x"],button["y"]), imgUp.GetSize(), wx.BORDER_NONE)
             c.SetBackgroundColour("#000000")
-            self.Bind(wx.EVT_BUTTON, curry(self.executeEvent, button["event"]), c)
+            self.Bind(wx.EVT_BUTTON, Curry(self.executeEvent, button["event"]), c)
             c.SetBitmapFocus(imgUp)
             c.SetBitmapPressed(imgDown)
             c.SetBitmapDisabled(imgUp)

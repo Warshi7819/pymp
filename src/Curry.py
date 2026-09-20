@@ -8,10 +8,10 @@
 # License     : GNU General Public License (GPL)  #
 ###################################################
 
-# Create a curry class used to supply arguments to button events
+# Create a Curry class used to supply arguments to button events
 # Based on an example from the pythonCookbook
 # http://aspn.activestate.com/ASPN/Python/Cookbook/
-class curry:
+class Curry:
      # Class constructor
      # ARGS:
      #   *args =

@@ -277,7 +277,7 @@ class HttpStreamingClient(threading.Thread):
     
 
 
-class audio_tcp_client(threading.Thread):
+class AudioTcpClient(threading.Thread):
     """
     Class for streaming over tcp/ip from pymp server
     """
@@ -416,7 +416,7 @@ class audio_tcp_client(threading.Thread):
         return True
 
 
-class audio_localfile_client(threading.Thread):
+class AudioLocalfileClient(threading.Thread):
     """
     Class for streaming local files
     """
@@ -510,7 +510,7 @@ class audio_localfile_client(threading.Thread):
         return True
         
         
-class file_streaming:
+class FileStreaming:
     """
     Class to make streaming mp3 from lokal file look the same 
     as streaming over http or over TCP/IP 
@@ -570,14 +570,14 @@ class file_streaming:
         # test if it is a local file
         if media.lower().startswith('file://'):
             # Start streaming file
-            self.fp = audio_localfile_client(media)
+            self.fp = AudioLocalfileClient(media)
             self.fp.start()
             return True
         
         # test if it is an tcp/ip stream
         elif media.lower().startswith('tcp://'):
             # Start fetching file from server
-            self.fp = audio_tcp_client(media)
+            self.fp = AudioTcpClient(media)
             self.fp.start()
             return True
 

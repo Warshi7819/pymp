@@ -17,10 +17,10 @@ import random
 from socket import *
 
 # Import own modules
-from Pymedia_api_new import pymedia_api
+from Pymedia_api_new import PymediaApi
 from OwnConstants import *
 
-class player_state:
+class PlayerState:
     """
     A container to hold the state of the player
     """
@@ -38,9 +38,9 @@ class player_state:
         self.PLAYER_MODE = mode
 
 # Setting the available players
-PLAYER_MODES = [(pymedia_api, "MP3")]
+PLAYER_MODES = [(PymediaApi, "MP3")]
 
-class music_controller(threading.Thread):
+class MusicController(threading.Thread):
     """
     The music event based controller
     """
@@ -65,7 +65,7 @@ class music_controller(threading.Thread):
 
         # init the state of the player
         self.current_mode = PLAYER_MODES[0][PLAYER_TEXTUAL_NAME]
-        self.state = player_state(self.current_mode)
+        self.state = PlayerState(self.current_mode)
 
         # The players
         self.players = {}

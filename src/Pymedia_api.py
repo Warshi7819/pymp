@@ -21,7 +21,7 @@ from OwnConstants import *
 
 # Class to control the playing of audio using
 # pygame asynchronously
-class pymedia_controller(threading.Thread):
+class PymediaController(threading.Thread):
 
     def __init__(self):
         """
@@ -273,7 +273,7 @@ class pymedia_controller(threading.Thread):
         return 0
 
 
-class pymedia_api:
+class PymediaApi:
     """
     Class to make the current underlying 3rdparty
     streaming software transparent. To incorporate a new
@@ -374,7 +374,7 @@ class pymedia_api:
             # Initialize pygame mixer
             if not pygame.mixer.get_init():
                 pygame.mixer.init()
-            self.pymedia_o = pymedia_controller()
+            self.pymedia_o = PymediaController()
             self.pymedia_o.start()
 
         return True

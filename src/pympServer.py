@@ -154,7 +154,7 @@ class ClientHandler(threading.Thread):
     
 
 
-class pyMPServer:
+class PympServer:
     """
     The server that will serve the connecting clients
     """
@@ -273,4 +273,4 @@ if __name__ == "__main__":
         sys.exit(1)
         
     # Start server
-    pyMPServer(rootDir, port)
+    PympServer(rootDir, port)

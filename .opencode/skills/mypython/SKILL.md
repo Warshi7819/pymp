@@ -11,9 +11,11 @@ Write Python code that matches this repository's established conventions. Every 
 
 ## Naming
 
-- **Classes**: PascalCase. One primary class per file, named after the file.
+- **Classes**: PascalCase (each word starts with uppercase, no underscores). One primary class per file, named after the file.
   - `class AppLauncher(threading.Thread):` in `AppLauncher.py`
   - `class DirectoryPlugin(IndexerObject):` in `DirectoryPlugin.py`
+  - `class MusicController(threading.Thread):` ← correct (PascalCase)
+  - NOT `class music_controller` or `class pyPlayerFrame` ← wrong
 - **Methods**: camelCase. Never snake_case.
   - `def executeProgram(self, event):`
   - `def getExecutionString(self, index, startChar=""):`

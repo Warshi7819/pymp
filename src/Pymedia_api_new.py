@@ -24,7 +24,7 @@ from file_streaming import HttpStreamingClient
 import wx
 from GuiUtils import InformDialog
 
-class pymedia_controller(threading.Thread):
+class PymediaController(threading.Thread):
     """
     Class to control the playing of audio using
     pygame asyncronously. Rewritten for new api
@@ -406,7 +406,7 @@ class pymedia_controller(threading.Thread):
         return 0
 
 
-class pymedia_api:
+class PymediaApi:
     """
     Class to make the current underlying 3rdparty
     streaming software transparent. To incorporate a new
@@ -509,7 +509,7 @@ class pymedia_api:
             # (44100 Hz, s16, stereo, 2048 buffer for low latency)
             if not pygame.mixer.get_init():
                 pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=2048)
-            self.pymedia_o = pymedia_controller()
+            self.pymedia_o = PymediaController()
             self.pymedia_o.start()
 
         return True
